@@ -1,5 +1,13 @@
 # The simulation code for the trait-population coevolution model
 
+## Upload the scripts
+
+Upload the whole repositary to the cluster.
+
+```bash
+scp -r Trait_pop_model_sim p-user@peregrine.hpc.rug.nl:/home/p-user
+```
+
 ## Install
 
 Follow the instruction below on cluster:
