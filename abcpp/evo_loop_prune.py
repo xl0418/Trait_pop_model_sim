@@ -28,6 +28,8 @@ def normalized_norm(x, y):
 dir_path = '/home/p274981/abcpp/'
 files_full = dir_path + 'tree_data/example4/'
 files_prune = dir_path + 'tree_data/example15/'
+file2 = dir_path + 'abcpp/smc%dg%da.npy' % (gamma_index,a_index)
+
 td_full = DVTreeData(path=files_full, scalar=10000)
 td_purne = DVTreeData(path=files_prune, scalar=10000)
 
@@ -172,6 +174,5 @@ for g in range(generations):
 #
 para_data = {'gamma': gamma_data, 'a': a_data, 'nu': nu_data,'fitness': fitness}
 # file='C:/Liang/Code/Pro2/Python_p2/abcpp/abcpp/smcdata/'
-file = '/home/p274981/abcpp/abcpp/'
-file2 = file + 'smc%dg%da.npy' % (gamma_index,a_index)
+
 np.save(file2,para_data)
