@@ -29,10 +29,10 @@ $ sbatch loopjob_pro2_nv.bash
 ```
 
 Here we want to test the model under 36 parameter combinations for one tree.
-All the tree data is given in the folder *tree_data*. Change the tree number in the script evo_loop_nv.py to test different trees. 
+All the tree data is given in the folder *tree_data*. Change the tree number in the script evo_loop_nv.py to test different trees. Note that the directory should be switched to your account.
 
 ```python
-dir_path = '~'
+dir_path = '/home/p-user/abcpp/'
 files = dir_path + 'tree_data/example17/'
 ```
 
