@@ -12,7 +12,7 @@ $ cd abcpp/
 $ abcpp chmod +x ./build_pg_gelifes.sh
 $ abcpp ./build_pg_gelifes.sh
 ```
-Now, the compiling is done and you can submit the script to the cluster.
+Now, the compiling is done and you can submit the job to the cluster.
 
 The script loopjob_pro2_nv.bash can submit multiple jobs to the cluster. 
 
