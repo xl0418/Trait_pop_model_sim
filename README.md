@@ -1,4 +1,4 @@
-# Trait_pop_model_sim
+# The simulation code for the trait-population coevolution model
 
 ## Install
 
