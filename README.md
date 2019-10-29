@@ -1,6 +1,27 @@
 # The simulation code for the trait-population coevolution model
 
-## Upload the scripts
+## Running on Windows
+
+Open the terminal and check if python is installed correctly.
+
+```bash
+Trait_pop_model_sim>python --version
+Python 3.7.0
+```
+
+Python 3.7.0 is expected as the output.
+
+Then, go into the folder abcpp and run 
+
+````bash
+Trait_pop_model_sim\abcpp>python BaleenWhale_MS_pics.py --treedata treedata/ --result output_file_name --num_threads 6
+````
+
+The first argument indicates the input data of the phylogenetic tree. The second argument gives the output name. The format of the output is set to be npy files. The third argument determines how many threads to use. The default setting will use all available threads. 
+
+## Running on the cluster (Linux)
+
+### Upload the scripts
 
 Upload the whole repositary to the cluster.
 
@@ -8,7 +29,9 @@ Upload the whole repositary to the cluster.
 scp -r Trait_pop_model_sim p-user@peregrine.hpc.rug.nl:/home/p-user
 ```
 
-## Install
+
+
+### Install on the cluster
 
 Follow the instruction below on cluster:
 
@@ -21,20 +44,6 @@ $ abcpp chmod +x ./build_pg_gelifes.sh
 $ abcpp ./build_pg_gelifes.sh
 ```
 Now, the compiling is done and you can submit the job to the cluster.
-
-The script loopjob_pro2_nv.bash can submit multiple jobs to the cluster. 
-
-```bash
-$ sbatch loopjob_pro2_nv.bash
-```
-
-Here we want to test the model under 36 parameter combinations for one tree.
-All the tree data is given in the folder *tree_data*. Change the tree number in the script evo_loop_nv.py to test different trees. Note that the directory should be switched to your account.
-
-```python
-dir_path = '/home/p-user/abcpp/'
-files = dir_path + 'tree_data/example17/'
-```
 
 
 ## Questions
