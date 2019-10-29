@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>73e7fca4-da67-42d0-8321-62b372714250</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>perf.py</StartupFile>
+    <StartupFile>BaleenWhale_MS_umtd_pics.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -14,6 +14,7 @@
     <InterpreterId>Global|PythonCore|3.7</InterpreterId>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,12 +25,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="dvtraitsim_shared.py" />
+    <Compile Include="BaleenWhale_MS_umtd_pics.py" />
+    <Compile Include="BW_MS_umtd_pic.py" />
     <Compile Include="dvtraitsim_py.py" />
-    <Compile Include="evo.py" />
-    <Compile Include="hist.py" />
+    <Compile Include="dvtraitsim_shared.py" />
+    <Compile Include="Dvtraitsim_TV.py" />
+    <Compile Include="Dvtraitsim_TVM.py" />
+    <Compile Include="Dvtraitsim_TVP.py" />
     <Compile Include="perf.py" />
-    <Compile Include="test.py" />
+    <Compile Include="Test_TVMLog10.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.7" />

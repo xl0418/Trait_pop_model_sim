@@ -1,0 +1,45 @@
+#NEXUS
+[R-package PHYTOOLS, Sat Jun 29 15:50:51 2019]
+
+BEGIN TAXA;
+	TITLE Taxa;
+	DIMENSIONS NTAX = 15;
+	TAXLABELS
+		B.acutorostrata
+		B.bonaerensis
+		B.borealis
+		B.brydei
+		B.edeni
+		B.musculus
+		B.mysticetus
+		B.omurai
+		B.physalus
+		C.marginata
+		E.australis
+		E.glacialis
+		E.japonica
+		E.robustus
+		M.novaeangliae
+	;
+END;
+BEGIN TREES;
+	TRANSLATE
+		1	B.acutorostrata,
+		2	B.bonaerensis,
+		3	B.borealis,
+		4	B.brydei,
+		5	B.edeni,
+		6	B.musculus,
+		7	B.mysticetus,
+		8	B.omurai,
+		9	B.physalus,
+		10	C.marginata,
+		11	E.australis,
+		12	E.glacialis,
+		13	E.japonica,
+		14	E.robustus,
+		15	M.novaeangliae
+	;
+	TREE * UNTITLED = [&R] ((7:5.619563421,(11:0.9406182095,(12:0.4022244439,13:0.4022244439)4:0.5383937657)3:4.678945212)2:14.9649125,(((1:3.017298046,2:3.017298046)7:6.724820059,((((3:2.705173664,(4:1.769804105,5:1.769804105)12:0.9353695586)11:3.169793338,8:5.874967001)10:1.213363782,6:7.088330783)9:1.436783329,((9:5.068334989,15:5.068334989)14:2.865079284,14:7.933414273)13:0.5916998386)8:1.217003994)6:8.627296984,10:18.36941509)5:2.215060836)1:17.45515599;
+END;
+

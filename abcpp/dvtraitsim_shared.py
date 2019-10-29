@@ -1,6 +1,11 @@
 import numpy as np
 
 
+# select time stamp for sorting
+def timeKey(elem):
+    return elem[0]
+
+
 class DVTreeData:
     def __init__(self, path, scalar):
         self.path = path
@@ -26,9 +31,9 @@ class DVTreeData:
         self.total_species = len(self.speciate_time)
         # create event array: [time, parent, daughter]
         # extinction event if daughter == -1, speciation event otherwise
-        self.events = sorted(self._speciation_events() + self._extinction_events())
+        self.events = sorted(self._speciation_events() + self._extinction_events(), key=timeKey)
         # prepare simulation events
-        self.sim_events = np.array(self.events);
+        self.sim_events = np.array(self.events)
         self.sim_events[:,0] = scalar * self.sim_events[:,0]
         self.sim_events = np.array(self.sim_events).astype(np.int64)
         self.sim_events = np.append(self.sim_events, [[-1,-1,-1]], axis=0)   # guard
@@ -49,15 +54,25 @@ class DVTreeData:
 
     # creates list of extinction events [time, specie, -1] 
     def _extinction_events(self):
-        extinction_events = list()
-        for se in range(0, len(self.extinct_time)):
-            time = self.extinct_time[se]
-            if time != -1:
-                extinction_events.append([time, np.where(self.extinct_time == time)[0][0], -1])
+        extinctind = np.where(self.extinct_time > 0)
+        exttime = self.extinct_time[extinctind]
+        extinctindlist = [list(i) for i in extinctind][0]
+        exttimelist = list(exttime)
+        twoc = list(zip(exttimelist, extinctindlist))
+        extinction_events = [twoc[i]+(-1,) for i in range(len(twoc))]
+        extinction_events = [list(extinction_events[i]) for i in range(len(extinction_events))]
         return extinction_events
 
 
+
+
 # converts named parameters in numpy.array
-def DVParam(gamma, a, K, nu, r, theta, Vmax, inittrait, initpop, initpop_sigma, break_on_mu):
-    return np.array([gamma, a, K, nu, r, theta, Vmax, inittrait, initpop, initpop_sigma, 1.0 if break_on_mu else 0.0]).astype(float)
+# inittrait, initpop and initpop_sigma are not used in DVTraitsim keep this for all model variants 
+def DVParamLiang(gamma, a, K, h, nu, r, theta, V00, V01, Vmax, inittrait, initpop, initpop_sigma, break_on_mu, num_threads=-1):
+    return np.array([gamma, a, K, h, nu, r, theta, V00, V01, Vmax, inittrait, initpop, initpop_sigma, 1.0 if break_on_mu else 0.0, num_threads]).astype(float)
+
+# converts named parameters in numpy.array
+# deprecated 
+def DVParamDrury(gamma, a, theta, m, inittrait, var_trait, num_threads=-1):
+    return np.array([gamma, a, theta, m, inittrait, var_trait, num_threads]).astype(float)
 

@@ -1,11 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "abcpp", "abcpp\abcpp.pyproj", "{73E7FCA4-DA67-42D0-8321-62B372714250}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "module", "module\module.vcxproj", "{15A02EDE-5EF1-4938-9815-456FE2CD186D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{81D3178D-4384-4D62-9C96-0C883A51741B}"
+	ProjectSection(SolutionItems) = preProject
+		build_peregrine.sh = build_peregrine.sh
+		build_pg_gelifes.sh = build_pg_gelifes.sh
+		build_ubuntu.sh = build_ubuntu.sh
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
