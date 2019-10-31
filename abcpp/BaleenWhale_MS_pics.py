@@ -111,8 +111,8 @@ sampleparam_TVM = DVParamLiang(gamma=1, a=1, K=K_TVM, h=1, nu=nu, r=1, theta=0, 
 
 # pop = dvcpp.DVSim(td, obs_param)
 
-population = 1000
-generations = 3
+population = 40000
+generations = 30
 total_population = population * 3
 
 lefttrait = np.min(obsZ)
