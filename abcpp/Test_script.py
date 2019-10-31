@@ -1,7 +1,7 @@
+import argparse
 import sys
+import os
 import numpy as np
-sys.path.append('C:/Liang/abcpp_ms8/abcpp')
-
 from dvtraitsim_shared import DVTreeData, DVParamLiang
 import dvtraitsim_cpp as dvcpp
 from scipy.stats import norm
@@ -9,9 +9,23 @@ import csv
 import dendropy
 from dendropy.model import continuous
 from itertools import repeat
+from itertools import starmap
 from pic_compute import pic_compute
 from tp_update_theta import tp_update
-from itertools import starmap
+
+
+# parse arguments
+parser = argparse.ArgumentParser(description='BaleenWhale arguments')
+parser.add_argument("--treedata", required=True, type=str, help="treedata directories")
+parser.add_argument("--result", required=True, type=str, help="result npy file")
+parser.add_argument("--num_threads", default=-1, required=False, type=int, help="number of threads")
+parser.add_argument("--sstats", required=True, type=str, help="3 types of summary statistics: "
+                                                              "smtd; umtd; pics")
+args = parser.parse_args()
+files = args.treedata
+output = args.result
+num_threads = args.num_threads
+sstats = args.sstats
 
 #
 # argsort of 2-dimensional arrays is awkward
@@ -31,14 +45,6 @@ K_TV = 1e6
 K_TVM = 1e12
 nu=1e-4
 
-
-#full tree
-# dir_path = '/home/p286026/Liang/abcpp/'
-dir_path = '' #'c:/Liang/Googlebox/Research/Project2/'
-
-files = dir_path + 'treedata/'
-
-savedir = dir_path + 'modelselec2w_umtd_pics.npy'
 
 td = DVTreeData(path=files, scalar=20000)
 
@@ -98,18 +104,18 @@ print('trying to estimate the parameters', '...')
 # let's try to find a true simulation:
 sampleparam_TVP = DVParamLiang(gamma=1, a=1, K=K_TVP, h=1, nu=nu, r=1, theta=0, V00=.0001,
                                V01=.0001, Vmax=100, inittrait=meantrait, initpop=1e5,
-                               initpop_sigma=10.0, break_on_mu=False)
+                               initpop_sigma=10.0, break_on_mu=False, num_threads=num_threads)
 sampleparam_TV = DVParamLiang(gamma=1, a=1, K=K_TV, h=1, nu=nu, r=1, theta=0, V00=.0001, V01=.0001,
                               Vmax=100, inittrait=meantrait, initpop=1e5,
-                              initpop_sigma=10.0, break_on_mu=False)
+                              initpop_sigma=10.0, break_on_mu=False, num_threads=num_threads)
 sampleparam_TVM = DVParamLiang(gamma=1, a=1, K=K_TVM, h=1, nu=nu, r=1, theta=0, V00=.0001,
                                V01=.0001, Vmax=100.0, inittrait=meantrait, initpop=1e5,
-                               initpop_sigma=10.0, break_on_mu=False)
+                               initpop_sigma=10.0, break_on_mu=False, num_threads=num_threads)
 
 # pop = dvcpp.DVSim(td, obs_param)
 
-population = 2000
-generations = 3
+population = 40000
+generations = 30
 total_population = population * 3
 
 lefttrait = np.min(obsZ)
@@ -250,23 +256,27 @@ for g in range(generations):
             print("WARNING:Valid simulations are too scarce!")
         if num_valid_sims_TVP > 0:
             Z_modelTVP = simmodelTVP['Z'][valid_TVP]
-            pic_ordered_list = list(starmap(pic_compute,
-                                                 zip(repeat(tree_sim), Z_modelTVP, repeat(taxa1),
-                                                     range(num_valid_sims_TVP))))
-            # in case the parallel computation returns disordered output
-            order_list = []
-            contrast_list = []
-            for i in range(num_valid_sims_TVP):
-                order_list.append(pic_ordered_list[i][1])
-                contrast_list.append(pic_ordered_list[i][0])
-            ordered_contrast_list = [contrast_list[item] for item in np.argsort(order_list)]
-            contrast_array = abs(np.vstack(ordered_contrast_list))
-            # i, j = argsort2D(Z_modelTVP)
-            # Z_modelTVP = Z_modelTVP[i, j]
-            # V = pop['V'][valid][i, j]
-            Z_modelTVP = np.nan_to_num(Z_modelTVP)
-            Z = np.vstack([Z, Z_modelTVP])
-            pics = np.vstack([pics, contrast_array])
+            if sstats=='smtd':
+                i, j = argsort2D(Z_modelTVP)
+                Z_modelTVP = Z_modelTVP[i, j]
+                # V = pop['V'][valid][i, j]
+                Z_modelTVP = np.nan_to_num(Z_modelTVP)
+                Z = np.vstack([Z, Z_modelTVP])
+            else:
+                pic_ordered_list = list(starmap(pic_compute,
+                                                     zip(repeat(tree_sim), Z_modelTVP, repeat(taxa1),
+                                                         range(num_valid_sims_TVP))))
+                # in case the parallel computation returns disordered output
+                order_list = []
+                contrast_list = []
+                for i in range(num_valid_sims_TVP):
+                    order_list.append(pic_ordered_list[i][1])
+                    contrast_list.append(pic_ordered_list[i][0])
+                ordered_contrast_list = [contrast_list[item] for item in np.argsort(order_list)]
+                contrast_array = abs(np.vstack(ordered_contrast_list))
+                Z_modelTVP = np.nan_to_num(Z_modelTVP)
+                Z = np.vstack([Z, Z_modelTVP])
+                pics = np.vstack([pics, contrast_array])
             # V = np.nan_to_num(V)
             # GOF: Goodness of fit
         if len(valid_TVP) == 0:
@@ -280,23 +290,26 @@ for g in range(generations):
         valid_TV = np.where(simmodelTV['sim_time'] == td.sim_evo_time)[0]
         num_valid_sims_TV = len(valid_TV)
         Z_modelTV = simmodelTV['Z'][valid_TV]
-        pic_ordered_list = list(starmap(pic_compute,
-                                             zip(repeat(tree_sim), Z_modelTV, repeat(taxa1),
-                                                 range(num_valid_sims_TV))))
-        # in case the parallel computation returns disordered output
-        order_list = []
-        contrast_list = []
-        for i in range(num_valid_sims_TV):
-            order_list.append(pic_ordered_list[i][1])
-            contrast_list.append(pic_ordered_list[i][0])
-        ordered_contrast_list = [contrast_list[item] for item in np.argsort(order_list)]
-        contrast_array = abs(np.vstack(ordered_contrast_list))
-        # i, j = argsort2D(Z_modelTV)
-        # Z_modelTV = Z_modelTV[i, j]
-        # V = pop['V'][valid][i, j]
-        Z_modelTV = np.nan_to_num(Z_modelTV)
-        Z = np.vstack([Z, Z_modelTV])
-        pics = np.vstack([pics, contrast_array])
+        if sstats == 'smtd':
+            i, j = argsort2D(Z_modelTV)
+            Z_modelTV = Z_modelTV[i, j]
+            Z_modelTV = np.nan_to_num(Z_modelTV)
+            Z = np.vstack([Z, Z_modelTV])
+        else:
+            pic_ordered_list = list(starmap(pic_compute,
+                                                 zip(repeat(tree_sim), Z_modelTV, repeat(taxa1),
+                                                     range(num_valid_sims_TV))))
+            # in case the parallel computation returns disordered output
+            order_list = []
+            contrast_list = []
+            for i in range(num_valid_sims_TV):
+                order_list.append(pic_ordered_list[i][1])
+                contrast_list.append(pic_ordered_list[i][0])
+            ordered_contrast_list = [contrast_list[item] for item in np.argsort(order_list)]
+            contrast_array = abs(np.vstack(ordered_contrast_list))
+            Z_modelTV = np.nan_to_num(Z_modelTV)
+            Z = np.vstack([Z, Z_modelTV])
+            pics = np.vstack([pics, contrast_array])
 
     if TVM_sample_length > 0:
         print('TVM simulations start...')
@@ -304,37 +317,47 @@ for g in range(generations):
         valid_TVM = np.where(simmodelTVM['sim_time'] == td.sim_evo_time)[0]
         num_valid_sims_TVM = len(valid_TVM)
         Z_modelTVM = simmodelTVM['Z'][valid_TVM]
-        pic_ordered_list = list(starmap(pic_compute,
-                                             zip(repeat(tree_sim), Z_modelTVM, repeat(taxa1),
-                                                 range(num_valid_sims_TVM))))
-        # in case the parallel computation returns disordered output
-        order_list = []
-        contrast_list = []
-        for i in range(num_valid_sims_TVM):
-            order_list.append(pic_ordered_list[i][1])
-            contrast_list.append(pic_ordered_list[i][0])
-        ordered_contrast_list = [contrast_list[item] for item in np.argsort(order_list)]
-        contrast_array = abs(np.vstack(ordered_contrast_list))
-        # i, j = argsort2D(Z_modelTVM)
-        # Z_modelTVM = Z_modelTVM[i, j]
-        # V = pop['V'][valid][i, j]
-        Z_modelTVM = np.nan_to_num(Z_modelTVM)
-        Z = np.vstack([Z, Z_modelTVM])
-        pics = np.vstack([pics, contrast_array])
+        if sstats == 'smtd':
+            i, j = argsort2D(Z_modelTVM)
+            Z_modelTVM = Z_modelTVM[i, j]
+            Z_modelTVM = np.nan_to_num(Z_modelTVM)
+            Z = np.vstack([Z, Z_modelTVM])
+        else:
+            pic_ordered_list = list(starmap(pic_compute,
+                                            zip(repeat(tree_sim), Z_modelTVM, repeat(taxa1),
+                                                range(num_valid_sims_TVM))))
+            # in case the parallel computation returns disordered output
+            order_list = []
+            contrast_list = []
+            for i in range(num_valid_sims_TVM):
+                order_list.append(pic_ordered_list[i][1])
+                contrast_list.append(pic_ordered_list[i][0])
+            ordered_contrast_list = [contrast_list[item] for item in np.argsort(order_list)]
+            contrast_array = abs(np.vstack(ordered_contrast_list))
+            Z_modelTVM = np.nan_to_num(Z_modelTVM)
+            Z = np.vstack([Z, Z_modelTVM])
+            pics = np.vstack([pics, contrast_array])
 
-    Z = Z[1:, ]
-    pics = pics[1:, ]
+    if sstats == 'smtd':
+        Z = Z[1:, ]
+    else:
+        Z = Z[1:, ]
+        pics = pics[1:, ]
 
     valid = np.concatenate([valid_TVP, np.array(valid_TV) + TVP_sample_length,
                             np.array(valid_TVM) + TVP_sample_length + TV_sample_length
                             ]).astype(int)
-
-    eudis = normalized_norm(Z, obsZ)
-    eudis_pic = normalized_norm(pics, emp_pic_orded_node)
-    # eudis = eudistance(Z, obsZ)
-
-    fitness[g, valid] += 1 - eudis
-    fitness[g, valid] += 1 - eudis_pic
+    if sstats == 'smtd':
+        eudis = normalized_norm(Z, obsZ)
+        fitness[g, valid] += 1 - eudis
+    elif sstats == 'pics':
+        eudis_pic = normalized_norm(pics, emp_pic_orded_node)
+        fitness[g, valid] += 1 - eudis_pic
+    else:
+        eudis = normalized_norm(Z, obsZ)
+        eudis_pic = normalized_norm(pics, emp_pic_orded_node)
+        fitness[g, valid] += 1 - eudis
+        fitness[g, valid] += 1 - eudis_pic
 
     # fitness[g,valid] += 1.0 - normalized_norm(np.sqrt(V), np.sqrt(obsV))
 
@@ -497,4 +520,4 @@ for g in range(generations):
                  'vm_data_TVM': vm_data_TVM, 'theta_data_TVM': theta_data_TVM
                  }
 
-    np.save(savedir, para_data)
+    np.save(output, para_data)
