@@ -2,6 +2,7 @@ import argparse
 import sys
 import os
 import numpy as np
+sys.path.append('C:/Liang/abcpp_ms10/abcpp')
 from dvtraitsim_shared import DVTreeData, DVParamLiang
 import dvtraitsim_cpp as dvcpp
 from scipy.stats import norm
@@ -131,19 +132,19 @@ gamma_last_TVP = para_data['gamma_data_TVP'][ -1]
 a_last_TVP = para_data['a_data_TVP'][-1]
 nu_last_TVP = para_data['nu_data_TVP'][-1]
 theta_last_TVP = para_data['theta_data_TVP'][-1]
-Vm_last_TVP = para_data['Vm_data_TVP'][-1]
+Vm_last_TVP = para_data['vm_data_TVP'][-1]
 
 gamma_last_TV = para_data['gamma_data_TV'][ -1]
 a_last_TV = para_data['a_data_TV'][-1]
 nu_last_TV = para_data['nu_data_TV'][-1]
 theta_last_TV = para_data['theta_data_TV'][-1]
-Vm_last_TV = para_data['Vm_data_TV'][-1]
+Vm_last_TV = para_data['vm_data_TV'][-1]
 
 gamma_last_TVM = para_data['gamma_data_TVM'][ -1]
 a_last_TVM = para_data['a_data_TVM'][-1]
 nu_last_TVM = para_data['nu_data_TVM'][-1]
 theta_last_TVM = para_data['theta_data_TVM'][-1]
-Vm_last_TVM = para_data['Vm_data_TVM'][-1]
+Vm_last_TVM = para_data['vm_data_TVM'][-1]
 
 fit_last = para_data['fitness'][-1]
 
@@ -184,8 +185,7 @@ total_generations = generations + continue_num
 # model choice
 model_index = np.array([0, 1, 2])
 model_params = np.repeat(model_index, repeats=population)
-model_data = np.zeros(shape=(total_generations, total_population))
-model_data[0, :] = model_params
+model_data = np.tile(model_params, (total_generations,1))
 propose_model = model_params
 
 # TVP
@@ -194,11 +194,11 @@ a_data_TVP = np.zeros(shape=(total_generations, population))
 nu_data_TVP = np.zeros(shape=(total_generations, population))
 vm_data_TVP = np.zeros(shape=(total_generations, population))
 theta_data_TVP = np.zeros(shape=(total_generations, population))
-gamma_data_TVP[:generations-1] = para_data['gamma_data_TVP']
-a_data_TVP[:generations-1] = para_data['a_data_TVP']
-nu_data_TVP[:generations-1] = para_data['nu_data_TVP']
-vm_data_TVP[:generations-1] = para_data['vm_data_TVP']
-theta_data_TVP[:generations-1] = para_data['theta_data_TVP']
+gamma_data_TVP[:generations] = para_data['gamma_data_TVP']
+a_data_TVP[:generations] = para_data['a_data_TVP']
+nu_data_TVP[:generations] = para_data['nu_data_TVP']
+vm_data_TVP[:generations] = para_data['vm_data_TVP']
+theta_data_TVP[:generations] = para_data['theta_data_TVP']
 
 
 # TV
@@ -207,11 +207,11 @@ a_data_TV = np.zeros(shape=(total_generations, population))
 nu_data_TV = np.zeros(shape=(total_generations, population))
 vm_data_TV = np.zeros(shape=(total_generations, population))
 theta_data_TV = np.zeros(shape=(total_generations, population))
-gamma_data_TV[:generations-1] = para_data['gamma_data_TV']
-a_data_TV[:generations-1] = para_data['a_data_TV']
-nu_data_TV[:generations-1] = para_data['nu_data_TV']
-vm_data_TV[:generations-1] = para_data['vm_data_TV']
-theta_data_TV[:generations-1] = para_data['theta_data_TV']
+gamma_data_TV[:generations] = para_data['gamma_data_TV']
+a_data_TV[:generations] = para_data['a_data_TV']
+nu_data_TV[:generations] = para_data['nu_data_TV']
+vm_data_TV[:generations] = para_data['vm_data_TV']
+theta_data_TV[:generations] = para_data['theta_data_TV']
 
 # TVM
 gamma_data_TVM = np.zeros(shape=(total_generations, population))
@@ -219,11 +219,11 @@ a_data_TVM = np.zeros(shape=(total_generations, population))
 nu_data_TVM = np.zeros(shape=(total_generations, population))
 vm_data_TVM = np.zeros(shape=(total_generations, population))
 theta_data_TVM = np.zeros(shape=(total_generations, population))
-gamma_data_TVM[:generations-1] = para_data['gamma_data_TVM']
-a_data_TVM[:generations-1] = para_data['a_data_TVM']
-nu_data_TVM[:generations-1] = para_data['nu_data_TVM']
-vm_data_TVM[:generations-1] = para_data['vm_data_TVM']
-theta_data_TVM[:generations-1] = para_data['theta_data_TVM']
+gamma_data_TVM[:generations] = para_data['gamma_data_TVM']
+a_data_TVM[:generations] = para_data['a_data_TVM']
+nu_data_TVM[:generations] = para_data['nu_data_TVM']
+vm_data_TVM[:generations] = para_data['vm_data_TVM']
+theta_data_TVM[:generations] = para_data['theta_data_TVM']
 
 fitness = np.zeros(shape=(total_generations, total_population))
 fitness[:generations-1] = para_data['fitness']

@@ -398,36 +398,36 @@ for g in range(generations):
 
     chosengamma_TVP, chosena_TVP, chosennu_TVP, chosenvm_TVP, chosentheta_TVP = np.mean(
         params_TVP[previous_bestfitted_index_TVP, 0]), \
-                                                                                np.mean(params_TVP[
-                                                                                            previous_bestfitted_index_TVP, 1]), \
-                                                                                np.mean(params_TVP[
-                                                                                            previous_bestfitted_index_TVP, 4]), \
-                                                                                np.mean(params_TVP[
-                                                                                            previous_bestfitted_index_TVP, 9]), \
-                                                                                np.mean(params_TVP[
-                                                                                            previous_bestfitted_index_TVP, 6])
+                                                np.mean(params_TVP[
+                                                            previous_bestfitted_index_TVP, 1]), \
+                                                np.mean(params_TVP[
+                                                            previous_bestfitted_index_TVP, 4]), \
+                                                np.mean(params_TVP[
+                                                            previous_bestfitted_index_TVP, 9]), \
+                                                np.mean(params_TVP[
+                                                            previous_bestfitted_index_TVP, 6])
 
     chosengamma_TV, chosena_TV, chosennu_TV, chosenvm_TV, chosentheta_TV = np.mean(
         params_TV[previous_bestfitted_index_TV, 0]), \
-                                                                           np.mean(params_TV[
-                                                                                       previous_bestfitted_index_TV, 1]), \
-                                                                           np.mean(params_TV[
-                                                                                       previous_bestfitted_index_TV, 4]), \
-                                                                           np.mean(params_TV[
-                                                                                       previous_bestfitted_index_TV, 9]), \
-                                                                           np.mean(params_TV[
-                                                                                       previous_bestfitted_index_TV, 6])
+                                                   np.mean(params_TV[
+                                                               previous_bestfitted_index_TV, 1]), \
+                                                   np.mean(params_TV[
+                                                               previous_bestfitted_index_TV, 4]), \
+                                                   np.mean(params_TV[
+                                                               previous_bestfitted_index_TV, 9]), \
+                                                   np.mean(params_TV[
+                                                               previous_bestfitted_index_TV, 6])
 
     chosengamma_TVM, chosena_TVM, chosennu_TVM, chosenvm_TVM, chosentheta_TVM = np.mean(
         params_TVM[previous_bestfitted_index_TVM, 0]), \
-                                                                                np.mean(params_TVM[
-                                                                                            previous_bestfitted_index_TVM, 1]), \
-                                                                                np.mean(params_TVM[
-                                                                                            previous_bestfitted_index_TVM, 4]), \
-                                                                                np.mean(params_TVM[
-                                                                                            previous_bestfitted_index_TVM, 9]), \
-                                                                                np.mean(params_TVM[
-                                                                                            previous_bestfitted_index_TVM, 6])
+                                                np.mean(params_TVM[
+                                                            previous_bestfitted_index_TVM, 1]), \
+                                                np.mean(params_TVM[
+                                                            previous_bestfitted_index_TVM, 4]), \
+                                                np.mean(params_TVM[
+                                                            previous_bestfitted_index_TVM, 9]), \
+                                                np.mean(params_TVM[
+                                                            previous_bestfitted_index_TVM, 6])
 
     print('Mean estimates: TVP gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
     chosengamma_TVP, chosena_TVP, chosennu_TVP, chosenvm_TVP, chosentheta_TVP))
