@@ -1,5 +1,5 @@
 
-def trait_simulator(files,output,num_threads,sstats):
+def trait_simulator(files,output,num_threads,sstats,iterations,particles):
     import argparse
     import sys
     import os
@@ -118,8 +118,8 @@ def trait_simulator(files,output,num_threads,sstats):
 
     # pop = dvcpp.DVSim(td, obs_param)
 
-    population = 40000
-    generations = 30
+    population = particles
+    generations = iterations
     total_population = population * 3
 
     lefttrait = np.min(obsZ)
@@ -373,9 +373,7 @@ def trait_simulator(files,output,num_threads,sstats):
         modelTVperc = len(np.where(propose_model[fit_index] == 1)[0]) / len(fit_index)
         modelTVMperc = len(np.where(propose_model[fit_index] == 2)[0]) / len(fit_index)
 
-        print('Iteration = %d 25th Model TVP: %.1f%% ;  Model TV: %.1f%% ; Model TVM: %.1f%%...'
-              % (g, modelTVPperc * 100, modelTVperc * 100, modelTVMperc * 100))
-        print('Average fitness: %f' % np.mean(fitness[g, fit_index]))
+
         # reevaluate the weight of the best fitted  models
         weight_model_bestfitted = weight_model[fit_index] * fitness[g, fit_index] / sum(
             weight_model[fit_index] * fitness[g, fit_index])
@@ -433,13 +431,20 @@ def trait_simulator(files,output,num_threads,sstats):
                                                     np.mean(params_TVM[
                                                                 previous_bestfitted_index_TVM, 6])
 
+        output_log = sys.stdout
+        f = open('progress_log.txt', 'w')
+        sys.stdout = f
+        print('Iteration = %d 25th Model TVP: %.1f%% ;  Model TV: %.1f%% ; Model TVM: %.1f%%...'
+              % (g, modelTVPperc * 100, modelTVperc * 100, modelTVMperc * 100))
+        print('Average fitness: %f' % np.mean(fitness[g, fit_index]))
         print('Mean estimates: TVP gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
         chosengamma_TVP, chosena_TVP, chosennu_TVP, chosenvm_TVP, chosentheta_TVP))
         print('Mean estimates: TV gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
         chosengamma_TV, chosena_TV, chosennu_TV, chosenvm_TV, chosentheta_TV))
         print('Mean estimates: TVM gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
         chosengamma_TVM, chosena_TVM, chosennu_TVM, chosenvm_TVM, chosentheta_TVM))
-
+        sys.stdout = output_log
+        f.close()
         model_data[g + 1, :] = propose_model
         gamma_data_TVP[g + 1, :] = params_TVP[:, 0]
         a_data_TVP[g + 1, :] = params_TVP[:, 1]

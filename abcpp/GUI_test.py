@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+import threading
 sys.path.append('C:/Liang/Trait_pop_model_sim/abcpp')
 from sim_argu_test import simtest
 class trait_player:
@@ -70,8 +71,11 @@ class trait_player:
         self.gobutton = Button(self.labelFrame4, text="Go", command=self.trait_simer,height = 1,
                                width = 10)
         self.gobutton.grid(row=0, column=0,sticky="E")
+        self.progressbutton = Button(self.labelFrame4,text="Progress",
+                                     command=self.test_program_thread,height = 1, width = 10)
+        self.progressbutton.grid(row=1,column=0,sticky="E")
         self.outputtextbox = Text(self.labelFrame4)
-        self.outputtextbox.grid(column=0, row=1,sticky="W")
+        self.outputtextbox.grid(column=0, row=2,sticky="W")
 
     # Open a file dialog
     def fileDialog(self):
@@ -111,6 +115,20 @@ class trait_player:
     def update_particles(self):
         self.particles_value=self.particles.get()
         print('No. of particles to be used: %s' % str(self.particles_value))
+
+    # put the test program in a seperate thread so it doesn't lock up the GUI
+    def test_program_thread(self):
+        thread = threading.Thread(None, self.progress, None, (), {})
+        thread.start()
+
+    def progress(self):
+        self.outputtextbox.delete('1.0', END)
+        # read the data
+        with open("out.txt", "r") as f:
+            self.outputtextbox.insert(INSERT,f.read())
+
+        self.master.after(10000,self.progress)
+        self.outputtextbox.see(END)
 
 root = Tk()
 my_gui = trait_player(root)
