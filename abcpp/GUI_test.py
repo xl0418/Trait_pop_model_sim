@@ -3,6 +3,7 @@ from tkinter import filedialog
 import threading
 sys.path.append('C:/Liang/Trait_pop_model_sim/abcpp')
 from sim_argu_test import simtest
+
 class trait_player:
     def __init__(self, master):
         self.master = master

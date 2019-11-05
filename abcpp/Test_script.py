@@ -21,12 +21,18 @@ parser.add_argument("--result", required=True, type=str, help="result npy file")
 parser.add_argument("--num_threads", default=-1, required=False, type=int, help="number of threads")
 parser.add_argument("--sstats", required=True, type=str, help="3 types of summary statistics: "
                                                               "smtd; umtd; pics")
+parser.add_argument("--num_iterations", default=30, required=False, type=int, help="number of "
+                                                                                 "iterations")
+parser.add_argument("--num_particles", default=20000, required=False, type=int, help="number of "
+                                                                                 "particles")
+
 args = parser.parse_args()
 files = args.treedata
 output = args.result
 num_threads = args.num_threads
 sstats = args.sstats
-
+population = args.num_iterations
+generations = args.num_particles
 #
 # argsort of 2-dimensional arrays is awkward
 # returns i,j so that X[i,j] == np.sort(X)
@@ -114,8 +120,7 @@ sampleparam_TVM = DVParamLiang(gamma=1, a=1, K=K_TVM, h=1, nu=nu, r=1, theta=0, 
 
 # pop = dvcpp.DVSim(td, obs_param)
 
-population = 40000
-generations = 30
+
 total_population = population * 3
 
 lefttrait = np.min(obsZ)
