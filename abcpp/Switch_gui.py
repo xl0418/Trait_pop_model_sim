@@ -399,7 +399,7 @@ class GeneCluScri(tk.Frame):
         self.iterations_value = self.iterations.get()
         self.particles_value = self.particles.get()
 
-        self.gobutton = tk.Button(self.labelFrame4, text="Generate", command=self.copyy,
+        self.gobutton = tk.Button(self.labelFrame4, text="Generate", command=self.create_bash_script,
                                   height=1,
                                width=10)
         self.gobutton.grid(row=0, column=0, sticky="E")
@@ -448,11 +448,8 @@ class GeneCluScri(tk.Frame):
         self.particles_value = self.particles.get()
         print('No. of particles to be used: %s' % str(self.particles_value))
 
-        # put the test program in a seperate thread so it doesn't lock up the GUI
-
-    def copyy(self):
+    def copy_treedata(self):
         source_file=self.treedatadir
-        print("Copy the data file from %s to %s" % (source_file,self.save_dir))
         src_files = os.listdir(source_file)
         for file_name in src_files:
             full_file_name = os.path.join(source_file, file_name)
@@ -461,6 +458,34 @@ class GeneCluScri(tk.Frame):
                 shutil.copytree(full_file_name, des_file_name, symlinks=False, ignore=None)
             else:
                 shutil.copy(full_file_name, des_file_name)
+        print("Copy the data file from %s to %s" % (source_file,self.save_dir))
+
+
+    def copy_algorithm_script(self):
+        current_algorithm_script = os.getcwd()+"\\abcpp\\Trait_simulator_cluster.py"
+        shutil.copy2(current_algorithm_script,self.save_dir)
+        print("Copy the algorithm script to %s" % (self.save_dir))
+
+    def create_bash_script(self):
+        stats_vec = ['smtd', 'umtd', 'pics']
+        stats = stats_vec[self.sstats_value - 1]
+        with open('c:\\Liang\\run.sh', 'w') as rsh:
+            rsh.write('''\
+#!/bin/bash
+#SBATCH --time=10-00:00:00
+#SBATCH --partition=gelifes
+#SBATCH --ntasks=1
+#SBATCH --nodes=1
+#SBATCH --mem=10GB
+#SBATCH --cpus-per-task=20
+#SBATCH --output=MSumtd.log
+#SBATCH --job-name=MSumtd
+
+python3 Trait_simulator_cluster.py --treedata %s --result %s --num_threads %i --sstats %s 
+--num_iterations %i --num_particles %i
+                ''' % ('treedata\\', self.save_dir, int(self.threads_value), stats,
+                       int(self.iterations_value), int(self.particles_value)))
+
 
 
 if __name__ == "__main__":
