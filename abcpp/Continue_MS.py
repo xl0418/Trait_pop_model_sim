@@ -185,15 +185,15 @@ total_generations = generations + continue_num
 # model choice
 model_index = np.array([0, 1, 2])
 model_params = np.repeat(model_index, repeats=population)
-model_data = np.tile(model_params, (total_generations,1))
+model_data = np.tile(model_params, (total_generations+1,1))
 propose_model = model_params
 
 # TVP
-gamma_data_TVP = np.zeros(shape=(total_generations, population))
-a_data_TVP = np.zeros(shape=(total_generations, population))
-nu_data_TVP = np.zeros(shape=(total_generations, population))
-vm_data_TVP = np.zeros(shape=(total_generations, population))
-theta_data_TVP = np.zeros(shape=(total_generations, population))
+gamma_data_TVP = np.zeros(shape=(total_generations+1, population))
+a_data_TVP = np.zeros(shape=(total_generations+1, population))
+nu_data_TVP = np.zeros(shape=(total_generations+1, population))
+vm_data_TVP = np.zeros(shape=(total_generations+1, population))
+theta_data_TVP = np.zeros(shape=(total_generations+1, population))
 gamma_data_TVP[:generations] = para_data['gamma_data_TVP']
 a_data_TVP[:generations] = para_data['a_data_TVP']
 nu_data_TVP[:generations] = para_data['nu_data_TVP']
@@ -202,11 +202,11 @@ theta_data_TVP[:generations] = para_data['theta_data_TVP']
 
 
 # TV
-gamma_data_TV = np.zeros(shape=(total_generations, population))
-a_data_TV = np.zeros(shape=(total_generations, population))
-nu_data_TV = np.zeros(shape=(total_generations, population))
-vm_data_TV = np.zeros(shape=(total_generations, population))
-theta_data_TV = np.zeros(shape=(total_generations, population))
+gamma_data_TV = np.zeros(shape=(total_generations+1, population))
+a_data_TV = np.zeros(shape=(total_generations+1, population))
+nu_data_TV = np.zeros(shape=(total_generations+1, population))
+vm_data_TV = np.zeros(shape=(total_generations+1, population))
+theta_data_TV = np.zeros(shape=(total_generations+1, population))
 gamma_data_TV[:generations] = para_data['gamma_data_TV']
 a_data_TV[:generations] = para_data['a_data_TV']
 nu_data_TV[:generations] = para_data['nu_data_TV']
@@ -214,11 +214,11 @@ vm_data_TV[:generations] = para_data['vm_data_TV']
 theta_data_TV[:generations] = para_data['theta_data_TV']
 
 # TVM
-gamma_data_TVM = np.zeros(shape=(total_generations, population))
-a_data_TVM = np.zeros(shape=(total_generations, population))
-nu_data_TVM = np.zeros(shape=(total_generations, population))
-vm_data_TVM = np.zeros(shape=(total_generations, population))
-theta_data_TVM = np.zeros(shape=(total_generations, population))
+gamma_data_TVM = np.zeros(shape=(total_generations+1, population))
+a_data_TVM = np.zeros(shape=(total_generations+1, population))
+nu_data_TVM = np.zeros(shape=(total_generations+1, population))
+vm_data_TVM = np.zeros(shape=(total_generations+1, population))
+theta_data_TVM = np.zeros(shape=(total_generations+1, population))
 gamma_data_TVM[:generations] = para_data['gamma_data_TVM']
 a_data_TVM[:generations] = para_data['a_data_TVM']
 nu_data_TVM[:generations] = para_data['nu_data_TVM']
