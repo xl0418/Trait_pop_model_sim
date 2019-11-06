@@ -1,5 +1,5 @@
 
-def trait_simulator(files,output,num_threads,sstats,iterations,particles):
+def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     import argparse
     import sys
     import os
@@ -49,7 +49,7 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
     K_TVM = 1e12
     nu=1e-4
 
-
+    files = files+'/'
     td = DVTreeData(path=files, scalar=20000)
 
     with open(files + 'extantspecieslabels.csv') as csv_file:
@@ -103,7 +103,6 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
     tree_sim = dendropy.Tree.get(
         path=files + "bw.nex", schema="nexus",
         taxon_namespace=taxa1)
-    print('trying to estimate the parameters', '...')
 
     # let's try to find a true simulation:
     sampleparam_TVP = DVParamLiang(gamma=1, a=1, K=K_TVP, h=1, nu=nu, r=1, theta=0, V00=.0001,
@@ -242,6 +241,13 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
     weight_theta_TVM = np.zeros(population)
     weight_theta_TVM.fill(1 / population)
 
+    # Log the progress
+    output_log = sys.stdout
+    f = open('ParameterInference_log.txt', 'w+')
+    sys.stdout = f
+    print('trying to estimate the parameters', '...')
+    sys.stdout = output_log
+    f.close()
     for g in range(generations):
         # model 0
         TVP_sample_length = len(np.where(model_data[g, :] == 0)[0])
@@ -251,8 +257,11 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
         pics = np.zeros((1, td.total_species - 1))
 
         if TVP_sample_length > 0:
+            f = open('ParameterInference_log.txt', 'a')
+            sys.stdout = f
             print('TVP simulations start...')
-
+            sys.stdout = output_log
+            f.close()
             simmodelTVP = dvcpp.DVSimTVP(td, params_TVP)
             valid_TVP = np.where(simmodelTVP['sim_time'] == td.sim_evo_time)[0]
             num_valid_sims_TVP = len(valid_TVP)
@@ -287,7 +296,11 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
                 print('No complete results from TVP model ')
 
         if TV_sample_length > 0:
+            f = open('ParameterInference_log.txt', 'a')
+            sys.stdout = f
             print('TV simulations start...')
+            sys.stdout = output_log
+            f.close()
             # model 1
             # for param_drury in params_DR:
             simmodelTV = dvcpp.DVSimTV(td, params_TV)
@@ -316,7 +329,11 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
                 pics = np.vstack([pics, contrast_array])
 
         if TVM_sample_length > 0:
+            f = open('ParameterInference_log.txt', 'a')
+            sys.stdout = f
             print('TVM simulations start...')
+            sys.stdout = output_log
+            f.close()
             simmodelTVM = dvcpp.DVSimTVMLog10(td, params_TVM)
             valid_TVM = np.where(simmodelTVM['sim_time'] == td.sim_evo_time)[0]
             num_valid_sims_TVM = len(valid_TVM)
@@ -431,8 +448,7 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
                                                     np.mean(params_TVM[
                                                                 previous_bestfitted_index_TVM, 6])
 
-        output_log = sys.stdout
-        f = open('progress_log.txt', 'w')
+        f = open('ParameterInference_log.txt', 'a')
         sys.stdout = f
         print('Iteration = %d 25th Model TVP: %.1f%% ;  Model TV: %.1f%% ; Model TVM: %.1f%%...'
               % (g, modelTVPperc * 100, modelTVperc * 100, modelTVMperc * 100))
@@ -529,4 +545,10 @@ def trait_simulator(files,output,num_threads,sstats,iterations,particles):
                      'vm_data_TVM': vm_data_TVM, 'theta_data_TVM': theta_data_TVM
                      }
 
-        np.save(output, para_data)
+        np.save(result, para_data)
+    f = open('ParameterInference_log.txt', 'a')
+    sys.stdout = f
+    print('Done!')
+    sys.stdout = output_log
+    f.close()
+

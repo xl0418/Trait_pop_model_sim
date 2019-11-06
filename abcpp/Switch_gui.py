@@ -1,12 +1,16 @@
 import sys
 import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
+import tkinter.filedialog as fd
+import tkinter.ttk as ttk
 import threading
 import shutil
 import os
-sys.path.append('C:/Liang/Trait_pop_model_sim/abcpp')
-from sim_argu_test import simtest
+import time
 
+sys.path.append('C:/Liang/Trait_pop_model_sim/abcpp')
+# from sim_argu_test import simtest
+from Trait_simulator import trait_simulator
 class SampleApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -108,6 +112,9 @@ class ParaInf(tk.Frame):
         # Output info
         self.labelFrame4 = tk.LabelFrame(self, text="Report of the progress")
         self.labelFrame4.grid(column=0, row=4, padx=20, pady=20, sticky="W", columnspan=5)
+        self.progressbar = ttk.Progressbar(self.labelFrame4, mode='indeterminate',length=500)
+        self.progressbar.grid(column=0, row=0, sticky="W")
+
         # self.report = Text(master)
         # Set default values
         self.output_value = self.enteroutput.get()
@@ -116,29 +123,41 @@ class ParaInf(tk.Frame):
         self.iterations_value = self.iterations.get()
         self.particles_value = self.particles.get()
 
-        self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.trait_simer, height=1,
+        self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.go_process, height=1,
                                width=10)
-        self.gobutton.grid(row=0, column=0, sticky="E")
+        self.gobutton.grid(row=0, column=1, sticky="E")
         self.progressbutton = tk.Button(self.labelFrame4, text="Progress",
-                                     command=self.test_program_thread, height=1, width=10)
-        self.progressbutton.grid(row=1, column=0, sticky="E")
+                                     command=self.progress, height=1, width=10)
+        self.progressbutton.grid(row=1, column=1, sticky="E")
         self.outputtextbox = tk.Text(self.labelFrame4)
         self.outputtextbox.grid(column=0, row=2, sticky="W")
 
         # Open a file dialog
 
     def fileDialog(self):
-        self.filename = tk.filedialog.askdirectory()
+        self.filename = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
         self.label.grid(column=1, row=1)
         self.label.configure(text=self.filename)
         print('Data file is in the directory: %s' % self.filename)
 
     def trait_simer(self):
-        out_put = simtest(files=self.filename, result=self.output_value,
-                          num_threads=self.threads_value, sstats=self.sstats_value,
-                          iterations=self.iterations_value, particles=self.particles_value)
+        self.sstats_value = self.choice.get()
+        stats_vec = ['smtd', 'umtd', 'pics']
+        stats = stats_vec[self.sstats_value - 1]
+        print(self.filename,self.output_value,self.threads_value,
+              self.sstats_value,self.iterations_value,self.particles_value)
+        print(type(self.filename),type(self.output_value),type(self.threads_value),
+              type(self.sstats_value),type(self.iterations_value),type(self.particles_value))
+        out_put = trait_simulator(files=self.filename, result=self.output_value,
+                          num_threads=int(self.threads_value), sstats=stats,
+                          iterations=int(self.iterations_value), particles=int(
+                self.particles_value))
         self.outputtextbox.insert(tk.END, str(out_put) + '\n')
+
+    def sim_program_thread(self):
+        thread = threading.Thread(None, self.trait_simer, None, (), {})
+        thread.start()
 
     def update_output(self):
         self.output_value = self.enteroutput.get()
@@ -167,20 +186,39 @@ class ParaInf(tk.Frame):
 
         # put the test program in a seperate thread so it doesn't lock up the GUI
 
-    def test_program_thread(self):
-        thread = threading.Thread(None, self.progress, None, (), {})
-        thread.start()
+    # def log_program_thread(self):
+    #     thread = threading.Thread(None, self.progress, None, (), {})
+    #     thread.start()
 
     def progress(self):
         self.outputtextbox.delete('1.0', tk.END)
         # read the data
-        with open("out.txt", "r") as f:
+        with open("ParameterInference_log.txt", "r") as f:
             self.outputtextbox.insert(tk.INSERT, f.read())
 
         self.master.after(10000, self.progress)
         self.outputtextbox.see(tk.END)
 
+    def go_process(self):
+        self.progress()
+        self.sim_program_thread()
 
+    def foo(self):
+        time.sleep(60)  # simulate some work
+
+    def start_foo_thread(self):
+        global foo_thread
+        foo_thread = threading.Thread(target=self.foo)
+        foo_thread.daemon = True
+        self.progressbar.start()
+        foo_thread.start()
+        self.master.after(20, self.check_foo_thread)
+
+    def check_foo_thread(self):
+        if foo_thread.is_alive():
+            self.master.after(20, self.check_foo_thread)
+        else:
+            self.progressbar.stop()
 
 
 class ConParaInf(tk.Frame):
@@ -271,7 +309,7 @@ class ConParaInf(tk.Frame):
         # Open a file dialog
 
     def fileDialog(self):
-        self.filename = tk.filedialog.askdirectory()
+        self.filename = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
         self.label.grid(column=1, row=1)
         self.label.configure(text=self.filename)
@@ -399,7 +437,7 @@ class GeneCluScri(tk.Frame):
         self.iterations_value = self.iterations.get()
         self.particles_value = self.particles.get()
 
-        self.gobutton = tk.Button(self.labelFrame4, text="Generate", command=self.create_bash_script,
+        self.gobutton = tk.Button(self.labelFrame4, text="Generate", command=self.generate_all,
                                   height=1,
                                width=10)
         self.gobutton.grid(row=0, column=0, sticky="E")
@@ -410,25 +448,18 @@ class GeneCluScri(tk.Frame):
         # Open a file dialog
 
     def fileDialog(self):
-        self.treedatadir = tk.filedialog.askdirectory()
+        self.treedatadir = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
         self.label.grid(column=1, row=1)
         self.label.configure(text=self.treedatadir)
         print('Data file is in the directory: %s' % self.treedatadir)
 
     def savedir(self):
-        self.save_dir = tk.filedialog.askdirectory()
+        self.save_dir = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
         self.label.grid(column=1, row=3)
         self.label.configure(text=self.save_dir)
         print('Saving dir is in the directory: %s' % self.save_dir)
-
-    def Generate_scripts(self):
-        out_put = simtest(files=self.treedatadir, result=self.save_dir,
-                          num_threads=self.threads_value, sstats=self.sstats_value,
-                          iterations=self.iterations_value, particles=self.particles_value)
-        self.outputtextbox.insert(tk.END, str(out_put) + '\n')
-
 
     def update_sstats(self):
         self.sstats_value = self.choice.get()
@@ -451,9 +482,13 @@ class GeneCluScri(tk.Frame):
     def copy_treedata(self):
         source_file=self.treedatadir
         src_files = os.listdir(source_file)
+        # create treedata folder in the destination
+        des_treedata_dir = os.path.join(self.save_dir,"treedata")
+        if not os.path.exists(des_treedata_dir):
+            os.mkdir(des_treedata_dir)
         for file_name in src_files:
             full_file_name = os.path.join(source_file, file_name)
-            des_file_name = os.path.join(self.save_dir, file_name)
+            des_file_name = os.path.join(des_treedata_dir, file_name)
             if os.path.isdir(full_file_name):
                 shutil.copytree(full_file_name, des_file_name, symlinks=False, ignore=None)
             else:
@@ -469,7 +504,7 @@ class GeneCluScri(tk.Frame):
     def create_bash_script(self):
         stats_vec = ['smtd', 'umtd', 'pics']
         stats = stats_vec[self.sstats_value - 1]
-        with open('c:\\Liang\\run.sh', 'w') as rsh:
+        with open(self.save_dir+'\\run.sh', 'w') as rsh:
             rsh.write('''\
 #!/bin/bash
 #SBATCH --time=10-00:00:00
@@ -483,10 +518,13 @@ class GeneCluScri(tk.Frame):
 
 python3 Trait_simulator_cluster.py --treedata %s --result %s --num_threads %i --sstats %s 
 --num_iterations %i --num_particles %i
-                ''' % ('treedata\\', self.save_dir, int(self.threads_value), stats,
+                ''' % ('treedata\\', 'ParaInf_result_'+stats, int(self.threads_value), stats,
                        int(self.iterations_value), int(self.particles_value)))
 
-
+    def generate_all(self):
+        self.create_bash_script()
+        self.copy_treedata()
+        self.copy_algorithm_script()
 
 if __name__ == "__main__":
     app = SampleApp()
