@@ -454,6 +454,7 @@ class GeneCluScri(tk.Frame):
         self.label.configure(text=self.treedatadir)
         print('Data file is in the directory: %s' % self.treedatadir)
 
+
     def savedir(self):
         self.save_dir = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
@@ -461,11 +462,13 @@ class GeneCluScri(tk.Frame):
         self.label.configure(text=self.save_dir)
         print('Saving dir is in the directory: %s' % self.save_dir)
 
+
     def update_sstats(self):
         self.sstats_value = self.choice.get()
         stats_vec = ['smtd', 'umtd', 'pics']
         stats = stats_vec[self.sstats_value - 1]
         print('The summary stats is chosed to be: %s' % stats)
+
 
     def update_threads(self):
         self.threads_value = self.thread.get()
@@ -525,6 +528,26 @@ python3 Trait_simulator_cluster.py --treedata %s --result %s --num_threads %i --
         self.create_bash_script()
         self.copy_treedata()
         self.copy_algorithm_script()
+        self.GenCluScript_log()
+        self.outputtextbox.delete('1.0', tk.END)
+        # read the data
+        with open("GenerateClusterScript_log.txt", "r") as f:
+            self.outputtextbox.insert(tk.INSERT, f.read())
+        self.outputtextbox.see(tk.END)
+        with open(self.save_dir+"/run.sh", "r") as f:
+            self.outputtextbox.insert(tk.INSERT, f.read())
+        self.outputtextbox.see(tk.END)
+
+    def GenCluScript_log(self):
+        output_log = sys.stdout
+        f = open('GenerateClusterScript_log.txt', 'w')
+        sys.stdout = f
+        print("Copying the data from %s to %s ... \n" % (self.treedatadir, self.save_dir))
+        print("Generating run.sh script is done!" )
+        print("run.sh is ..." )
+        sys.stdout = output_log
+        f.close()
+
 
 if __name__ == "__main__":
     app = SampleApp()
