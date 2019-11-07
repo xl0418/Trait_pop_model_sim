@@ -61,71 +61,86 @@ class ParaInf(tk.Frame):
                             command=lambda: controller.show_frame("GeneCluScri"))
         button4 = tk.Button(self, text="Plotting",
                             command=lambda: controller.show_frame("Plots"))
-        button1.grid(row=0,column=0,sticky="W")
-        button2.grid(row=0,column=1,sticky="W")
-        button3.grid(row=0,column=2,sticky="W")
-        button4.grid(row=0,column=3,sticky="W")
+        button1.place(x = 15, y = 15, width=150, height=20)
+        button2.place(x = 165, y = 15, width=200, height=20)
+        button3.place(x = 365, y = 15, width=150, height=20)
+        button4.place(x = 515, y = 15, width=100, height=20)
 
         label = tk.Label(self, text="Parameter Inference", font=controller.title_font)
-        label.grid(row=1,column=0,sticky="W")
+        label.place(x = 15, y = 45, width=250, height=20)
 
+        # Frame 1
         self.labelFrame1 = tk.LabelFrame(self, text="Input and Output")
-        self.labelFrame1.grid(column=0, row=2, padx=20, pady=20, sticky="W", columnspan=2)
+        self.labelFrame1.place(x = 15, y = 75, width=300, height=125)
         self.browsebutton = tk.Button(self.labelFrame1, text="Browse A File", command=self.fileDialog)
-        self.browsebutton.grid(column=1, row=0)
-        self.data = tk.Label(self.labelFrame1, text='Data directory').grid(row=0, sticky="W")
-        self.output = tk.Label(self.labelFrame1, text='Output file name').grid(row=2, sticky="W")
+        self.browsebutton.place(x = 150, y = 5, width=140, height=20)
+        self.data = tk.Label(self.labelFrame1, text='Data directory').place(x = 5, y = 5,
+                                                                           width=140, height=20)
+        self.output = tk.Label(self.labelFrame1, text='Output file name').place(x = 5, y = 55,
+                                                                           width=140, height=20)
         self.enteroutput = tk.Entry(self.labelFrame1)
-        self.enteroutput.grid(row=2, column=1, ipadx="10")
+        self.enteroutput.place(x = 150, y = 55, width=110, height=20)
         self.enteroutput.bind('<Return>', lambda event:self.update_output())
 
         self.output_set = tk.Button(self.labelFrame1, text="Set", command=self.update_output)
-        self.output_set.grid(column=2, row=2)
+        self.output_set.place(x = 260, y = 55, width=30, height=20)
 
         # choose the number of iterations and particles
         self.labelFrame2 = tk.LabelFrame(self, text="Structure of the algorithm")
-        self.labelFrame2.grid(column=0, row=3, padx=20, pady=20, sticky="W")
+        self.labelFrame2.place(x = 15, y = 200, width=300, height=75)
         default_iterations = tk.DoubleVar(value=10)  # default value for the iterations
-        self.iter = tk.Label(self.labelFrame2, text='Iterations').grid(row=2, sticky="W")
+        self.iter = tk.Label(self.labelFrame2, text='Iterations').place(x = 5, y = 5,
+                                                                        width=140, height=20)
         self.iterations = tk.Spinbox(self.labelFrame2, from_=1, to=100,
                                   command=self.update_iterations, textvariable=default_iterations)
-        self.iterations.grid(row=2, column=1, ipadx="9")
+        self.iterations.place(x = 150, y = 5, width=140, height=20)
         self.iterations.bind('<Return>', lambda event:self.update_iterations())
 
         default_particles = tk.DoubleVar(value=1000)  # default value for the particles
-        self.par = tk.Label(self.labelFrame2, text='Particles').grid(row=3, sticky="W")
+        self.par = tk.Label(self.labelFrame2, text='Particles').place(x = 5, y = 30, width=140,
+                                                                     height=20)
         self.particles = tk.Spinbox(self.labelFrame2, from_=100, to=100000,
                                  command=self.update_particles, textvariable=default_particles)
-        self.particles.grid(row=3, column=1, ipadx="9")
+        self.particles.place(x = 150, y = 30, width=140, height=20)
         self.particles.bind('<Return>', lambda event:self.update_particles())
 
         # choose the number of threads
         self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
-        self.labelFrame3.grid(column=1, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame3.place(x = 325, y = 200, width=170, height=50)
         default_threads = tk.DoubleVar(value=1)  # default value for the threads
-        self.thr = tk.Label(self.labelFrame3, text='Threads').grid(row=4, sticky="W")
+        self.thr = tk.Label(self.labelFrame3, text='Threads').place(x = 5, y = 5, width=50,
+                                                                   height=20)
         self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
                               textvariable=default_threads)
-        self.thread.grid(row=4, column=1, ipadx="9")
+        self.thread.place(x = 60, y = 5, width=90, height=20)
         self.thread.bind('<Return>', lambda event:self.update_threads())
 
         # choose one summary stats
         self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
-        self.labelFrame4.grid(column=2, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame4.place(x = 505, y = 200, width=210, height=50)
         self.choice = tk.IntVar()
         self.choice.set(1)
         self.smtdbutton = tk.Radiobutton(self.labelFrame4, text='smtd', variable=self.choice,
-                                      value=1, command=self.update_sstats).grid(row=0, column=0)
+                                      value=1, command=self.update_sstats).place(x = 5,
+                                                                                 y = 5,
+                                                                                 width=60,
+                                                                                 height=20)
         self.umtdbutton = tk.Radiobutton(self.labelFrame4, text='umtd', variable=self.choice, value=2,
-                                      command=self.update_sstats).grid(row=0, column=1)
+                                      command=self.update_sstats).place(x = 70,
+                                                                                 y = 5,
+                                                                                 width=60,
+                                                                                 height=20)
         self.picsbutton = tk.Radiobutton(self.labelFrame4, text='pics', variable=self.choice, value=3,
-                                      command=self.update_sstats).grid(row=0, column=2)
+                                      command=self.update_sstats).place(x = 135,
+                                                                                 y = 5,
+                                                                                 width=60,
+                                                                                 height=20)
 
         # Output info
         self.labelFrame4 = tk.LabelFrame(self, text="Report of the progress")
-        self.labelFrame4.grid(column=0, row=4, padx=20, pady=20, sticky="W", columnspan=4)
+        self.labelFrame4.place(x = 15, y = 280, width=700, height=450)
         self.progressbar = ttk.Progressbar(self.labelFrame4, mode='indeterminate',length=500)
-        self.progressbar.grid(column=0, row=0, sticky="W")
+        self.progressbar.place(x = 5, y = 5, width=400, height=20)
 
         # self.report = Text(master)
         # Set default values
@@ -137,16 +152,16 @@ class ParaInf(tk.Frame):
 
         self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.go_process, height=1,
                                width=10)
-        self.gobutton.grid(row=0, column=0, sticky="E")
+        self.gobutton.place(x = 630, y = 5, width=50, height=20)
         self.outputtextbox = tk.Text(self.labelFrame4)
-        self.outputtextbox.grid(column=0, row=2, sticky="W")
+        self.outputtextbox.place(x = 5, y = 30, width=680, height=390)
 
         # Open a file dialog
 
     def fileDialog(self):
         self.filename = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
-        self.label.grid(column=1, row=1)
+        self.label.place(x = 5, y = 30, width=285, height=20)
         self.label.configure(text=self.filename)
         print('Data file is in the directory: %s' % self.filename)
 
@@ -171,7 +186,7 @@ class ParaInf(tk.Frame):
     def update_output(self):
         self.output_value = self.enteroutput.get()
         self.label = tk.Label(self.labelFrame1, text="")
-        self.label.grid(column=1, row=3)
+        self.label.place(x = 5, y = 80, width=285, height=20)
         self.label.configure(text=self.output_value)
         print('The result will be stored in: %s' % self.output_value)
 
@@ -243,72 +258,90 @@ class ConParaInf(tk.Frame):
                             command=lambda: controller.show_frame("GeneCluScri"))
         button4 = tk.Button(self, text="Plotting",
                             command=lambda: controller.show_frame("Plots"))
-        button1.grid(row=0,column=0,sticky="W")
-        button2.grid(row=0,column=1,sticky="W")
-        button3.grid(row=0,column=2,sticky="W")
-        button4.grid(row=0,column=3,sticky="W")
+        button1.place(x = 15, y = 15, width=150, height=20)
+        button2.place(x = 165, y = 15, width=200, height=20)
+        button3.place(x = 365, y = 15, width=150, height=20)
+        button4.place(x = 515, y = 15, width=100, height=20)
 
         label = tk.Label(self, text="Continue Parameter Inference", font=controller.title_font)
-        label.grid(row=1,column=0,sticky="W", columnspan=5)
+        label.place(x = 15, y = 45, width=400, height=20)
+
 
         # Frame 1
         self.labelFrame1 = tk.LabelFrame(self, text="Input and Output")
-        self.labelFrame1.grid(column=0, row=2, padx=20, pady=20, sticky="W", columnspan=5)
+        self.labelFrame1.place(x = 15, y = 75, width=300, height=125)
         self.browsebutton = tk.Button(self.labelFrame1, text="Browse A File", command=self.fileDialog)
-        self.browsebutton.grid(column=1, row=0)
-        self.data = tk.Label(self.labelFrame1, text='Data directory').grid(row=0, sticky="W")
-        self.output = tk.Label(self.labelFrame1, text='Output file name').grid(row=2, sticky="W")
+        self.browsebutton.place(x=150, y=5, width=140, height=20)
+        self.data = tk.Label(self.labelFrame1, text='Data directory').place(x=5, y=5,
+                                                                            width=140, height=20)
+        self.output = tk.Label(self.labelFrame1, text='Output file name').place(x=5, y=55,
+                                                                                width=140,
+                                                                                height=20)
         self.enteroutput = tk.Entry(self.labelFrame1)
-        self.enteroutput.grid(row=2, column=1, ipadx="10")
+        self.enteroutput.place(x=150, y=55, width=110, height=20)
         self.output_set = tk.Button(self.labelFrame1, text="Set", command=self.update_output)
-        self.output_set.grid(column=2, row=2)
+        self.output_set.place(x=260, y=55, width=30, height=20)
         self.enteroutput.bind('<Return>', lambda event:self.update_output())
 
         # Frame 1_1
         self.labelFrame1_1 = tk.LabelFrame(self, text="Continuous setting")
-        self.labelFrame1_1.grid(column=2, row=2, padx=20, pady=20, sticky="E", columnspan=5)
-        self.predata = tk.Label(self.labelFrame1_1, text='Pre result directory').grid(row=0,
-                                                                                   sticky="W")
-        self.contiter = tk.Label(self.labelFrame1_1, text='Continue iterations').grid(row=2,
-                                                                                   sticky="W")
+        self.labelFrame1_1.place(x = 325, y = 75, width=300, height=125)
+        self.predata = tk.Label(self.labelFrame1_1, text='Pre result directory').place(x=5, y=5,
+                                                                            width=140, height=20)
+        self.contiter = tk.Label(self.labelFrame1_1, text='Continue iterations').place(x=5, y=55,
+                                                                                width=140,
+                                                                                height=20)
         self.preresultbutton = tk.Button(self.labelFrame1_1, text="Browse A File",
                                      command=self.pre_result_file)
-        self.preresultbutton.grid(column=1, row=0)
+        self.preresultbutton.place(x=150, y=5, width=140, height=20)
         default_num_continue = tk.DoubleVar(value=10)  # default value for the iterations
 
         self.num_continue = tk.Spinbox(self.labelFrame1_1, from_=1, to=100,
                                      command=self.update_continue_num,
                                      textvariable=default_num_continue)
-        self.num_continue.grid(row=2, column=1, ipadx="10")
+        self.num_continue.place(x=150, y=55, width=110, height=20)
         self.num_continue.bind('<Return>', lambda event:self.update_continue_num())
 
         # Frame 3
         # choose the number of threads
         self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
-        self.labelFrame3.grid(column=0, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame3.place(x = 15, y = 210, width=170, height=50)
         default_threads = tk.DoubleVar(value=1)  # default value for the threads
-        self.thr = tk.Label(self.labelFrame3, text='Threads').grid(row=4, sticky="W")
+        self.thr = tk.Label(self.labelFrame3, text='Threads').place(x = 5, y = 5, width=50,
+                                                                   height=20)
         self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
                               textvariable=default_threads)
-        self.thread.grid(row=4, column=1, ipadx="9")
+        self.thread.place(x = 60, y = 5, width=90, height=20)
         self.thread.bind('<Return>', lambda event:self.update_threads())
+
 
         # Frame 4
         # choose one summary stats
         self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
-        self.labelFrame4.grid(column=2, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame4.place(x = 195, y = 210, width=210, height=50)
         self.choice = tk.IntVar()
         self.choice.set(1)
         self.smtdbutton = tk.Radiobutton(self.labelFrame4, text='smtd', variable=self.choice,
-                                      value=1, command=self.update_sstats).grid(row=0, column=0)
+                                      value=1, command=self.update_sstats).place(x = 5,
+                                                                                 y = 5,
+                                                                                 width=60,
+                                                                                 height=20)
         self.umtdbutton = tk.Radiobutton(self.labelFrame4, text='umtd', variable=self.choice, value=2,
-                                      command=self.update_sstats).grid(row=0, column=1)
+                                      command=self.update_sstats).place(x = 70,
+                                                                                 y = 5,
+                                                                                 width=60,
+                                                                                 height=20)
         self.picsbutton = tk.Radiobutton(self.labelFrame4, text='pics', variable=self.choice, value=3,
-                                      command=self.update_sstats).grid(row=0, column=2)
+                                      command=self.update_sstats).place(x = 135,
+                                                                                 y = 5,
+                                                                                 width=60,
+                                                                                 height=20)
 
         # Output info
         self.labelFrame4 = tk.LabelFrame(self, text="Report of the progress")
-        self.labelFrame4.grid(column=0, row=4, padx=20, pady=20, sticky="W", columnspan=5)
+        self.labelFrame4.place(x = 15, y = 280, width=700, height=450)
+        self.progressbar = ttk.Progressbar(self.labelFrame4, mode='indeterminate',length=500)
+        self.progressbar.place(x = 5, y = 5, width=400, height=20)
         # self.report = Text(master)
         # Set default values
         self.output_value = self.enteroutput.get()
@@ -318,24 +351,24 @@ class ConParaInf(tk.Frame):
         self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.conti_trait_simer,
                                   height=1,
                                width=10)
-        self.gobutton.grid(row=0, column=0, sticky="E")
+        self.gobutton.place(x = 630, y = 5, width=50, height=20)
 
         self.outputtextbox = tk.Text(self.labelFrame4)
-        self.outputtextbox.grid(column=0, row=2, sticky="W")
+        self.outputtextbox.place(x = 5, y = 30, width=680, height=390)
 
         # Open a file dialog
 
     def fileDialog(self):
         self.filename = fd.askdirectory()
         self.label = tk.Label(self.labelFrame1, text="")
-        self.label.grid(column=1, row=1)
+        self.label.place(x = 5, y = 30, width=285, height=20)
         self.label.configure(text=self.filename)
         print('Data file is in the directory: %s' % self.filename)
 
     def pre_result_file(self):
         self.pre_result = fd.askopenfilename()
         self.label = tk.Label(self.labelFrame1_1, text="")
-        self.label.grid(column=0, row=1,columnspan = 2)
+        self.label.place(x = 5, y = 30, width=285, height=20)
         self.label.configure(text=self.pre_result)
         print('Data file is in the directory: %s' % self.pre_result)
 
@@ -357,7 +390,7 @@ class ConParaInf(tk.Frame):
     def update_output(self):
         self.output_value = self.enteroutput.get()
         self.label = tk.Label(self.labelFrame1, text="")
-        self.label.grid(column=1, row=3)
+        self.label.place(x = 5, y = 80, width=285, height=20)
         self.label.configure(text=self.output_value)
         print('The result will be stored in: %s' % self.output_value)
 
