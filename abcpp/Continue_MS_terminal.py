@@ -2,7 +2,6 @@ import argparse
 import sys
 import os
 import numpy as np
-sys.path.append('C:/Liang/abcpp_ms10/abcpp')
 from dvtraitsim_shared import DVTreeData, DVParamLiang
 import dvtraitsim_cpp as dvcpp
 from scipy.stats import norm
@@ -180,7 +179,7 @@ params_TVM[:, 9] = Vm_last_TVM  # randomize 'Vm'
 
 
 # store parameters used
-total_generations = generations + continue_num
+total_generations = generations + continue_num - 1
 
 # model choice
 model_index = np.array([0, 1, 2])

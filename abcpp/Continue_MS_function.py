@@ -1,5 +1,5 @@
+def Continue_trait_simulator(files,previous_result,result,num_threads,sstats,continue_num):
 
-def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     import argparse
     import sys
     import os
@@ -14,23 +14,7 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     from itertools import starmap
     from pic_compute import pic_compute
     from tp_update_theta import tp_update
-
-
-    # parse arguments
-    # parser = argparse.ArgumentParser(description='BaleenWhale arguments')
-    # parser.add_argument("--treedata", required=True, type=str, help="treedata directories")
-    # parser.add_argument("--result", required=True, type=str, help="result npy file")
-    # parser.add_argument("--num_threads", default=-1, required=False, type=int, help="number of threads")
-    # parser.add_argument("--sstats", required=True, type=str, help="3 types of summary statistics: "
-    #                                                               "smtd; umtd; pics")
-    # args = parser.parse_args()
-    # files = args.treedata
-    # output = args.result
-    # num_threads = args.num_threads
-    # sstats = args.sstats
-    #
-    #
-
+    files = files+'/'
     #
     # argsort of 2-dimensional arrays is awkward
     # returns i,j so that X[i,j] == np.sort(X)
@@ -49,7 +33,7 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     K_TVM = 1e12
     nu=1e-4
 
-    files = files+'/'
+
     td = DVTreeData(path=files, scalar=20000)
 
     with open(files + 'extantspecieslabels.csv') as csv_file:
@@ -103,6 +87,9 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     tree_sim = dendropy.Tree.get(
         path=files + "bw.nex", schema="nexus",
         taxon_namespace=taxa1)
+    print('trying to estimate the parameters', '...')
+
+
 
     # let's try to find a true simulation:
     sampleparam_TVP = DVParamLiang(gamma=1, a=1, K=K_TVP, h=1, nu=nu, r=1, theta=0, V00=.0001,
@@ -115,10 +102,32 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
                                    V01=.0001, Vmax=100.0, inittrait=meantrait, initpop=1e5,
                                    initpop_sigma=10.0, break_on_mu=False, num_threads=num_threads)
 
-    # pop = dvcpp.DVSim(td, obs_param)
+    # Read the previous results
+    para_data = np.load(previous_result,allow_pickle=True).item()
+    generations = len(para_data['gamma_data_TVP'])
+    population = len(para_data['gamma_data_TVP'][0])
 
-    population = particles
-    generations = iterations
+    gamma_last_TVP = para_data['gamma_data_TVP'][ -1]
+    a_last_TVP = para_data['a_data_TVP'][-1]
+    nu_last_TVP = para_data['nu_data_TVP'][-1]
+    theta_last_TVP = para_data['theta_data_TVP'][-1]
+    Vm_last_TVP = para_data['vm_data_TVP'][-1]
+
+    gamma_last_TV = para_data['gamma_data_TV'][ -1]
+    a_last_TV = para_data['a_data_TV'][-1]
+    nu_last_TV = para_data['nu_data_TV'][-1]
+    theta_last_TV = para_data['theta_data_TV'][-1]
+    Vm_last_TV = para_data['vm_data_TV'][-1]
+
+    gamma_last_TVM = para_data['gamma_data_TVM'][ -1]
+    a_last_TVM = para_data['a_data_TVM'][-1]
+    nu_last_TVM = para_data['nu_data_TVM'][-1]
+    theta_last_TVM = para_data['theta_data_TVM'][-1]
+    Vm_last_TVM = para_data['vm_data_TVM'][-1]
+
+    fit_last = para_data['fitness'][-1]
+
+
     total_population = population * 3
 
     lefttrait = np.min(obsZ)
@@ -128,79 +137,76 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     prior_TVM = [0.5, 5, 800, 1500, 0.0, nu * 100, 0, 0.5e-3, lefttrait, righttrait]
 
     params_TVP = np.tile(sampleparam_TVP, (population, 1))  # duplicate
-    params_TVP[:, 0] = np.random.uniform(prior[0], prior[1], params_TVP.shape[0])  # randomize 'gamma'
-    params_TVP[:, 1] = np.random.uniform(prior[2], prior[3], params_TVP.shape[0])  # randomize 'a'
-    params_TVP[:, 4] = np.random.uniform(prior[4], prior[5], params_TVP.shape[0])  # randomize 'nu'
-    params_TVP[:, 6] = np.random.uniform(prior[8], prior[9], params_TVP.shape[0])  # randomize 'theta'
-    params_TVP[:, 9] = np.random.uniform(prior[6], prior[7], params_TVP.shape[0])  # randomize 'Vm'
+    params_TVP[:, 0] = gamma_last_TVP # randomize 'gamma'
+    params_TVP[:, 1] = a_last_TVP  # randomize 'a'
+    params_TVP[:, 4] = nu_last_TVP # randomize 'nu'
+    params_TVP[:, 6] = theta_last_TVP   # randomize 'theta'
+    params_TVP[:, 9] = Vm_last_TVP # randomize 'Vm'
 
     params_TV = np.tile(sampleparam_TV, (population, 1))  # duplicate
-    params_TV[:, 0] = np.random.uniform(prior[0], prior[1], params_TV.shape[0])  # randomize 'gamma'
-    params_TV[:, 1] = np.random.uniform(prior[2], prior[3], params_TV.shape[0])  # randomize 'a'
-    params_TV[:, 4] = np.random.uniform(prior[4], prior[5], params_TV.shape[0])  # randomize 'nu'
-    params_TV[:, 6] = np.random.uniform(prior[8], prior[9], params_TV.shape[0])  # randomize 'theta'
-    params_TV[:, 9] = np.random.uniform(prior[6], prior[7], params_TV.shape[0])  # randomize 'Vm'
+    params_TV[:, 0] = gamma_last_TV  # randomize 'gamma'
+    params_TV[:, 1] = a_last_TV   # randomize 'a'
+    params_TV[:, 4] = nu_last_TV   # randomize 'nu'
+    params_TV[:, 6] = theta_last_TV   # randomize 'theta'
+    params_TV[:, 9] = Vm_last_TV   # randomize 'Vm'
 
     params_TVM = np.tile(sampleparam_TVM, (population, 1))  # duplicate
-    params_TVM[:, 0] = np.random.uniform(prior_TVM[0], prior_TVM[1],
-                                         params_TVM.shape[0])  # randomize 'gamma'
-    params_TVM[:, 1] = np.random.uniform(prior_TVM[2], prior_TVM[3],
-                                         params_TVM.shape[0])  # randomize 'a'
-    params_TVM[:, 4] = np.random.uniform(prior_TVM[4], prior_TVM[5],
-                                         params_TVM.shape[0])  # randomize 'nu'
-    params_TVM[:, 6] = np.random.uniform(prior_TVM[8], prior_TVM[9],
-                                         params_TVM.shape[0])  # randomize 'theta'
-    params_TVM[:, 9] = np.random.uniform(prior_TVM[6], prior_TVM[7],
-                                         params_TVM.shape[0])  # randomize 'Vm'
+    params_TVM[:, 0] = gamma_last_TVM  # randomize 'gamma'
+    params_TVM[:, 1] = a_last_TVM  # randomize 'a'
+    params_TVM[:, 4] = nu_last_TVM  # randomize 'nu'
+    params_TVM[:, 6] = theta_last_TVM # randomize 'theta'
+    params_TVM[:, 9] = Vm_last_TVM  # randomize 'Vm'
+
+
+    # store parameters used
+    total_generations = generations + continue_num - 1
 
     # model choice
     model_index = np.array([0, 1, 2])
     model_params = np.repeat(model_index, repeats=population)
-    model_data = np.zeros(shape=(generations + 1, total_population))
-    model_data[0, :] = model_params
+    model_data = np.tile(model_params, (total_generations+1,1))
     propose_model = model_params
 
-    # store parameters used
     # TVP
-    gamma_data_TVP = np.zeros(shape=(generations + 1, population))
-    a_data_TVP = np.zeros(shape=(generations + 1, population))
-    nu_data_TVP = np.zeros(shape=(generations + 1, population))
-    vm_data_TVP = np.zeros(shape=(generations + 1, population))
-    theta_data_TVP = np.zeros(shape=(generations + 1, population))
+    gamma_data_TVP = np.zeros(shape=(total_generations+1, population))
+    a_data_TVP = np.zeros(shape=(total_generations+1, population))
+    nu_data_TVP = np.zeros(shape=(total_generations+1, population))
+    vm_data_TVP = np.zeros(shape=(total_generations+1, population))
+    theta_data_TVP = np.zeros(shape=(total_generations+1, population))
+    gamma_data_TVP[:generations] = para_data['gamma_data_TVP']
+    a_data_TVP[:generations] = para_data['a_data_TVP']
+    nu_data_TVP[:generations] = para_data['nu_data_TVP']
+    vm_data_TVP[:generations] = para_data['vm_data_TVP']
+    theta_data_TVP[:generations] = para_data['theta_data_TVP']
+
 
     # TV
-    gamma_data_TV = np.zeros(shape=(generations + 1, population))
-    a_data_TV = np.zeros(shape=(generations + 1, population))
-    nu_data_TV = np.zeros(shape=(generations + 1, population))
-    vm_data_TV = np.zeros(shape=(generations + 1, population))
-    theta_data_TV = np.zeros(shape=(generations + 1, population))
+    gamma_data_TV = np.zeros(shape=(total_generations+1, population))
+    a_data_TV = np.zeros(shape=(total_generations+1, population))
+    nu_data_TV = np.zeros(shape=(total_generations+1, population))
+    vm_data_TV = np.zeros(shape=(total_generations+1, population))
+    theta_data_TV = np.zeros(shape=(total_generations+1, population))
+    gamma_data_TV[:generations] = para_data['gamma_data_TV']
+    a_data_TV[:generations] = para_data['a_data_TV']
+    nu_data_TV[:generations] = para_data['nu_data_TV']
+    vm_data_TV[:generations] = para_data['vm_data_TV']
+    theta_data_TV[:generations] = para_data['theta_data_TV']
 
     # TVM
-    gamma_data_TVM = np.zeros(shape=(generations + 1, population))
-    a_data_TVM = np.zeros(shape=(generations + 1, population))
-    nu_data_TVM = np.zeros(shape=(generations + 1, population))
-    vm_data_TVM = np.zeros(shape=(generations + 1, population))
-    theta_data_TVM = np.zeros(shape=(generations + 1, population))
+    gamma_data_TVM = np.zeros(shape=(total_generations+1, population))
+    a_data_TVM = np.zeros(shape=(total_generations+1, population))
+    nu_data_TVM = np.zeros(shape=(total_generations+1, population))
+    vm_data_TVM = np.zeros(shape=(total_generations+1, population))
+    theta_data_TVM = np.zeros(shape=(total_generations+1, population))
+    gamma_data_TVM[:generations] = para_data['gamma_data_TVM']
+    a_data_TVM[:generations] = para_data['a_data_TVM']
+    nu_data_TVM[:generations] = para_data['nu_data_TVM']
+    vm_data_TVM[:generations] = para_data['vm_data_TVM']
+    theta_data_TVM[:generations] = para_data['theta_data_TVM']
 
-    gamma_data_TVP[0, :] = params_TVP[:, 0]
-    a_data_TVP[0, :] = params_TVP[:, 1]
-    nu_data_TVP[0, :] = params_TVP[:, 4]
-    vm_data_TVP[0, :] = params_TVP[:, 9]
-    theta_data_TVP[0, :] = params_TVP[:, 6]
+    fitness = np.zeros(shape=(total_generations, total_population))
+    fitness[:generations] = para_data['fitness']
 
-    gamma_data_TV[0, :] = params_TV[:, 0]
-    a_data_TV[0, :] = params_TV[:, 1]
-    nu_data_TV[0, :] = params_TV[:, 4]
-    vm_data_TV[0, :] = params_TV[:, 9]
-    theta_data_TV[0, :] = params_TV[:, 6]
-
-    gamma_data_TVM[0, :] = params_TVM[:, 0]
-    a_data_TVM[0, :] = params_TVM[:, 1]
-    nu_data_TVM[0, :] = params_TVM[:, 4]
-    vm_data_TVM[0, :] = params_TVM[:, 9]
-    theta_data_TVM[0, :] = params_TVM[:, 6]
-
-    fitness = np.zeros(shape=(generations, total_population))
     # Initialize the weights.
     weight_model = np.zeros(total_population)
     weight_model.fill(1 / total_population)
@@ -241,14 +247,7 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     weight_theta_TVM = np.zeros(population)
     weight_theta_TVM.fill(1 / population)
 
-    # Log the progress
-    output_log = sys.stdout
-    f = open('ParameterInference_log.txt', 'w')
-    sys.stdout = f
-    print('trying to estimate the parameters', '...')
-    sys.stdout = output_log
-    f.close()
-    for g in range(generations):
+    for g in range(generations,total_generations):
         # model 0
         TVP_sample_length = len(np.where(model_data[g, :] == 0)[0])
         TV_sample_length = len(np.where(model_data[g, :] == 1)[0])
@@ -257,11 +256,8 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
         pics = np.zeros((1, td.total_species - 1))
 
         if TVP_sample_length > 0:
-            f = open('ParameterInference_log.txt', 'a')
-            sys.stdout = f
             print('TVP simulations start...')
-            sys.stdout = output_log
-            f.close()
+
             simmodelTVP = dvcpp.DVSimTVP(td, params_TVP)
             valid_TVP = np.where(simmodelTVP['sim_time'] == td.sim_evo_time)[0]
             num_valid_sims_TVP = len(valid_TVP)
@@ -296,11 +292,7 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
                 print('No complete results from TVP model ')
 
         if TV_sample_length > 0:
-            f = open('ParameterInference_log.txt', 'a')
-            sys.stdout = f
             print('TV simulations start...')
-            sys.stdout = output_log
-            f.close()
             # model 1
             # for param_drury in params_DR:
             simmodelTV = dvcpp.DVSimTV(td, params_TV)
@@ -329,11 +321,7 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
                 pics = np.vstack([pics, contrast_array])
 
         if TVM_sample_length > 0:
-            f = open('ParameterInference_log.txt', 'a')
-            sys.stdout = f
             print('TVM simulations start...')
-            sys.stdout = output_log
-            f.close()
             simmodelTVM = dvcpp.DVSimTVMLog10(td, params_TVM)
             valid_TVM = np.where(simmodelTVM['sim_time'] == td.sim_evo_time)[0]
             num_valid_sims_TVM = len(valid_TVM)
@@ -390,7 +378,9 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
         modelTVperc = len(np.where(propose_model[fit_index] == 1)[0]) / len(fit_index)
         modelTVMperc = len(np.where(propose_model[fit_index] == 2)[0]) / len(fit_index)
 
-
+        print('Iteration = %d 25th Model TVP: %.1f%% ;  Model TV: %.1f%% ; Model TVM: %.1f%%...'
+              % (g, modelTVPperc * 100, modelTVperc * 100, modelTVMperc * 100))
+        print('Average fitness: %f' % np.mean(fitness[g, fit_index]))
         # reevaluate the weight of the best fitted  models
         weight_model_bestfitted = weight_model[fit_index] * fitness[g, fit_index] / sum(
             weight_model[fit_index] * fitness[g, fit_index])
@@ -417,50 +407,44 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
 
         chosengamma_TVP, chosena_TVP, chosennu_TVP, chosenvm_TVP, chosentheta_TVP = np.mean(
             params_TVP[previous_bestfitted_index_TVP, 0]), \
-                                                    np.mean(params_TVP[
-                                                                previous_bestfitted_index_TVP, 1]), \
-                                                    np.mean(params_TVP[
-                                                                previous_bestfitted_index_TVP, 4]), \
-                                                    np.mean(params_TVP[
-                                                                previous_bestfitted_index_TVP, 9]), \
-                                                    np.mean(params_TVP[
-                                                                previous_bestfitted_index_TVP, 6])
+                                                                                    np.mean(params_TVP[
+                                                                                                previous_bestfitted_index_TVP, 1]), \
+                                                                                    np.mean(params_TVP[
+                                                                                                previous_bestfitted_index_TVP, 4]), \
+                                                                                    np.mean(params_TVP[
+                                                                                                previous_bestfitted_index_TVP, 9]), \
+                                                                                    np.mean(params_TVP[
+                                                                                                previous_bestfitted_index_TVP, 6])
 
         chosengamma_TV, chosena_TV, chosennu_TV, chosenvm_TV, chosentheta_TV = np.mean(
             params_TV[previous_bestfitted_index_TV, 0]), \
-                                                       np.mean(params_TV[
-                                                                   previous_bestfitted_index_TV, 1]), \
-                                                       np.mean(params_TV[
-                                                                   previous_bestfitted_index_TV, 4]), \
-                                                       np.mean(params_TV[
-                                                                   previous_bestfitted_index_TV, 9]), \
-                                                       np.mean(params_TV[
-                                                                   previous_bestfitted_index_TV, 6])
+                                                                               np.mean(params_TV[
+                                                                                           previous_bestfitted_index_TV, 1]), \
+                                                                               np.mean(params_TV[
+                                                                                           previous_bestfitted_index_TV, 4]), \
+                                                                               np.mean(params_TV[
+                                                                                           previous_bestfitted_index_TV, 9]), \
+                                                                               np.mean(params_TV[
+                                                                                           previous_bestfitted_index_TV, 6])
 
         chosengamma_TVM, chosena_TVM, chosennu_TVM, chosenvm_TVM, chosentheta_TVM = np.mean(
             params_TVM[previous_bestfitted_index_TVM, 0]), \
-                                                    np.mean(params_TVM[
-                                                                previous_bestfitted_index_TVM, 1]), \
-                                                    np.mean(params_TVM[
-                                                                previous_bestfitted_index_TVM, 4]), \
-                                                    np.mean(params_TVM[
-                                                                previous_bestfitted_index_TVM, 9]), \
-                                                    np.mean(params_TVM[
-                                                                previous_bestfitted_index_TVM, 6])
+                                                                                    np.mean(params_TVM[
+                                                                                                previous_bestfitted_index_TVM, 1]), \
+                                                                                    np.mean(params_TVM[
+                                                                                                previous_bestfitted_index_TVM, 4]), \
+                                                                                    np.mean(params_TVM[
+                                                                                                previous_bestfitted_index_TVM, 9]), \
+                                                                                    np.mean(params_TVM[
+                                                                                                previous_bestfitted_index_TVM, 6])
 
-        f = open('ParameterInference_log.txt', 'a')
-        sys.stdout = f
-        print('Iteration = %d 25th Model TVP: %.1f%% ;  Model TV: %.1f%% ; Model TVM: %.1f%%...'
-              % (g, modelTVPperc * 100, modelTVperc * 100, modelTVMperc * 100))
-        print('Average fitness: %f' % np.mean(fitness[g, fit_index]))
         print('Mean estimates: TVP gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
         chosengamma_TVP, chosena_TVP, chosennu_TVP, chosenvm_TVP, chosentheta_TVP))
         print('Mean estimates: TV gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
         chosengamma_TV, chosena_TV, chosennu_TV, chosenvm_TV, chosentheta_TV))
         print('Mean estimates: TVM gamma: %.3e ; a: %.3e ; nu: %.3e ; Vm : %f; theta : %f' % (
         chosengamma_TVM, chosena_TVM, chosennu_TVM, chosenvm_TVM, chosentheta_TVM))
-        sys.stdout = output_log
-        f.close()
+
         model_data[g + 1, :] = propose_model
         gamma_data_TVP[g + 1, :] = params_TVP[:, 0]
         a_data_TVP[g + 1, :] = params_TVP[:, 1]
@@ -546,9 +530,3 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
                      }
 
         np.save(result, para_data)
-    f = open('ParameterInference_log.txt', 'a')
-    sys.stdout = f
-    print('Done!')
-    sys.stdout = output_log
-    f.close()
-

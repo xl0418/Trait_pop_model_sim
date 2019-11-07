@@ -11,6 +11,8 @@ import time
 sys.path.append('C:/Liang/Trait_pop_model_sim/abcpp')
 # from sim_argu_test import simtest
 from Trait_simulator import trait_simulator
+from Continue_MS_function import Continue_trait_simulator
+
 class SampleApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -71,6 +73,8 @@ class ParaInf(tk.Frame):
         self.output = tk.Label(self.labelFrame1, text='Output file name').grid(row=2, sticky="W")
         self.enteroutput = tk.Entry(self.labelFrame1)
         self.enteroutput.grid(row=2, column=1, ipadx="10")
+        self.enteroutput.bind('<Return>', lambda event:self.update_output())
+
         self.output_set = tk.Button(self.labelFrame1, text="Set", command=self.update_output)
         self.output_set.grid(column=2, row=2)
 
@@ -82,11 +86,14 @@ class ParaInf(tk.Frame):
         self.iterations = tk.Spinbox(self.labelFrame2, from_=1, to=100,
                                   command=self.update_iterations, textvariable=default_iterations)
         self.iterations.grid(row=2, column=1, ipadx="9")
+        self.iterations.bind('<Return>', lambda event:self.update_iterations())
+
         default_particles = tk.DoubleVar(value=1000)  # default value for the particles
         self.par = tk.Label(self.labelFrame2, text='Particles').grid(row=3, sticky="W")
         self.particles = tk.Spinbox(self.labelFrame2, from_=100, to=100000,
                                  command=self.update_particles, textvariable=default_particles)
         self.particles.grid(row=3, column=1, ipadx="9")
+        self.particles.bind('<Return>', lambda event:self.update_particles())
 
         # choose the number of threads
         self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
@@ -96,6 +103,7 @@ class ParaInf(tk.Frame):
         self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
                               textvariable=default_threads)
         self.thread.grid(row=4, column=1, ipadx="9")
+        self.thread.bind('<Return>', lambda event:self.update_threads())
 
         # choose one summary stats
         self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
@@ -126,9 +134,6 @@ class ParaInf(tk.Frame):
         self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.go_process, height=1,
                                width=10)
         self.gobutton.grid(row=0, column=1, sticky="E")
-        self.progressbutton = tk.Button(self.labelFrame4, text="Progress",
-                                     command=self.progress, height=1, width=10)
-        self.progressbutton.grid(row=1, column=1, sticky="E")
         self.outputtextbox = tk.Text(self.labelFrame4)
         self.outputtextbox.grid(column=0, row=2, sticky="W")
 
@@ -239,7 +244,7 @@ class ConParaInf(tk.Frame):
         label = tk.Label(self, text="Continue Parameter Inference", font=controller.title_font)
         label.grid(row=1,column=0,sticky="W", columnspan=5)
 
-
+        # Frame 1
         self.labelFrame1 = tk.LabelFrame(self, text="Input and Output")
         self.labelFrame1.grid(column=0, row=2, padx=20, pady=20, sticky="W", columnspan=5)
         self.browsebutton = tk.Button(self.labelFrame1, text="Browse A File", command=self.fileDialog)
@@ -250,33 +255,41 @@ class ConParaInf(tk.Frame):
         self.enteroutput.grid(row=2, column=1, ipadx="10")
         self.output_set = tk.Button(self.labelFrame1, text="Set", command=self.update_output)
         self.output_set.grid(column=2, row=2)
+        self.enteroutput.bind('<Return>', lambda event:self.update_output())
 
-        # choose the number of iterations and particles
-        self.labelFrame2 = tk.LabelFrame(self, text="Structure of the algorithm")
-        self.labelFrame2.grid(column=0, row=3, padx=20, pady=20, sticky="W")
-        default_iterations = tk.DoubleVar(value=10)  # default value for the iterations
-        self.iter = tk.Label(self.labelFrame2, text='Iterations').grid(row=2, sticky="W")
-        self.iterations = tk.Spinbox(self.labelFrame2, from_=1, to=100,
-                                  command=self.update_iterations, textvariable=default_iterations)
-        self.iterations.grid(row=2, column=1, ipadx="9")
-        default_particles = tk.DoubleVar(value=1000)  # default value for the particles
-        self.par = tk.Label(self.labelFrame2, text='Particles').grid(row=3, sticky="W")
-        self.particles = tk.Spinbox(self.labelFrame2, from_=100, to=100000,
-                                 command=self.update_particles, textvariable=default_particles)
-        self.particles.grid(row=3, column=1, ipadx="9")
+        # Frame 1_1
+        self.labelFrame1_1 = tk.LabelFrame(self, text="Continuous setting")
+        self.labelFrame1_1.grid(column=2, row=2, padx=20, pady=20, sticky="E", columnspan=5)
+        self.predata = tk.Label(self.labelFrame1_1, text='Pre result directory').grid(row=0,
+                                                                                   sticky="W")
+        self.contiter = tk.Label(self.labelFrame1_1, text='Continue iterations').grid(row=2,
+                                                                                   sticky="W")
+        self.preresultbutton = tk.Button(self.labelFrame1_1, text="Browse A File",
+                                     command=self.pre_result_file)
+        self.preresultbutton.grid(column=1, row=0)
+        default_num_continue = tk.DoubleVar(value=10)  # default value for the iterations
 
+        self.num_continue = tk.Spinbox(self.labelFrame1_1, from_=1, to=100,
+                                     command=self.update_continue_num,
+                                     textvariable=default_num_continue)
+        self.num_continue.grid(row=2, column=1, ipadx="10")
+        self.num_continue.bind('<Return>', lambda event:self.update_continue_num())
+
+        # Frame 3
         # choose the number of threads
         self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
-        self.labelFrame3.grid(column=2, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame3.grid(column=0, row=3, padx=20, pady=20, sticky="N")
         default_threads = tk.DoubleVar(value=1)  # default value for the threads
         self.thr = tk.Label(self.labelFrame3, text='Threads').grid(row=4, sticky="W")
         self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
                               textvariable=default_threads)
         self.thread.grid(row=4, column=1, ipadx="9")
+        self.thread.bind('<Return>', lambda event:self.update_threads())
 
+        # Frame 4
         # choose one summary stats
         self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
-        self.labelFrame4.grid(column=3, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame4.grid(column=2, row=3, padx=20, pady=20, sticky="N")
         self.choice = tk.IntVar()
         self.choice.set(1)
         self.smtdbutton = tk.Radiobutton(self.labelFrame4, text='smtd', variable=self.choice,
@@ -294,15 +307,12 @@ class ConParaInf(tk.Frame):
         self.output_value = self.enteroutput.get()
         self.sstats_value = self.choice.get()
         self.threads_value = self.thread.get()
-        self.iterations_value = self.iterations.get()
-        self.particles_value = self.particles.get()
-
-        self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.trait_simer, height=1,
+        self.continue_num_value = self.num_continue.get()
+        self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.conti_trait_simer,
+                                  height=1,
                                width=10)
         self.gobutton.grid(row=0, column=0, sticky="E")
-        self.progressbutton = tk.Button(self.labelFrame4, text="Progress",
-                                     command=self.test_program_thread, height=1, width=10)
-        self.progressbutton.grid(row=1, column=0, sticky="E")
+
         self.outputtextbox = tk.Text(self.labelFrame4)
         self.outputtextbox.grid(column=0, row=2, sticky="W")
 
@@ -315,10 +325,26 @@ class ConParaInf(tk.Frame):
         self.label.configure(text=self.filename)
         print('Data file is in the directory: %s' % self.filename)
 
-    def trait_simer(self):
-        out_put = simtest(files=self.filename, result=self.output_value,
-                          num_threads=self.threads_value, sstats=self.sstats_value,
-                          iterations=self.iterations_value, particles=self.particles_value)
+    def pre_result_file(self):
+        self.pre_result = fd.askopenfilename()
+        self.label = tk.Label(self.labelFrame1_1, text="")
+        self.label.grid(column=0, row=1,columnspan = 2)
+        self.label.configure(text=self.pre_result)
+        print('Data file is in the directory: %s' % self.pre_result)
+
+
+    def conti_trait_simer(self):
+        self.sstats_value = self.choice.get()
+        stats_vec = ['smtd', 'umtd', 'pics']
+        stats = stats_vec[self.sstats_value - 1]
+        print(self.filename, self.output_value, self.threads_value,
+              self.sstats_value)
+        print(type(self.filename), type(self.output_value), type(self.threads_value),
+              type(self.sstats_value))
+        out_put = Continue_trait_simulator(files=self.filename, result=self.output_value,
+                                  num_threads=int(self.threads_value), sstats=stats,
+                                  previous_result = self.pre_result,
+                                           continue_num=int(self.continue_num_value))
         self.outputtextbox.insert(tk.END, str(out_put) + '\n')
 
     def update_output(self):
@@ -337,6 +363,10 @@ class ConParaInf(tk.Frame):
     def update_threads(self):
         self.threads_value = self.thread.get()
         print('No. of threads to be used: %s' % str(self.threads_value))
+
+    def update_continue_num(self):
+        self.continue_num_value = self.num_continue.get()
+        print('No. of continue iterations: %s' % str(self.update_continue_num))
 
     def update_iterations(self):
         self.iterations_value = self.iterations.get()
@@ -400,11 +430,15 @@ class GeneCluScri(tk.Frame):
         self.iterations = tk.Spinbox(self.labelFrame2, from_=1, to=100,
                                   command=self.update_iterations, textvariable=default_iterations)
         self.iterations.grid(row=2, column=1, ipadx="9")
+        self.iterations.bind('<Return>', lambda event:self.update_iterations())
+
+
         default_particles = tk.DoubleVar(value=1000)  # default value for the particles
         self.par = tk.Label(self.labelFrame2, text='Particles').grid(row=3, sticky="W")
         self.particles = tk.Spinbox(self.labelFrame2, from_=100, to=100000,
                                  command=self.update_particles, textvariable=default_particles)
         self.particles.grid(row=3, column=1, ipadx="9")
+        self.particles.bind('<Return>', lambda event:self.update_particles())
 
         # choose the number of threads
         self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
@@ -414,6 +448,7 @@ class GeneCluScri(tk.Frame):
         self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
                               textvariable=default_threads)
         self.thread.grid(row=4, column=1, ipadx="9")
+        self.thread.bind('<Return>', lambda event:self.update_threads())
 
         # choose one summary stats
         self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
