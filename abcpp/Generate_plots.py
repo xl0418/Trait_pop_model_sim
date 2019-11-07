@@ -2,7 +2,7 @@ def generate_plots(result,plots_dir):
     import numpy as np
     import pandas as pd
     import seaborn as sns
-    import matplotlib.pyplot as plt
+    import sys
     import matplotlib
     matplotlib.use('Agg')
     est_data = np.load(result,allow_pickle=True).item()
@@ -44,6 +44,11 @@ def generate_plots(result,plots_dir):
     vm_vec_TVM = est_data['vm_data_TVM'][-2, previous_bestfitted_index_TVM]
     theta_vec_TVM = est_data['theta_data_TVM'][-2, previous_bestfitted_index_TVM]
 
+    # Log the progress
+    output_log = sys.stdout
+    f = open('Plotting_log.txt', 'w')
+    sys.stdout = f
+
     print('TVP 5th gamma = %.3e  a = %.3e nu = %.3e Vm = %f theta = %f' % (
         np.mean(gamma_vec_TVP) ,
         np.mean(a_vec_TVP) , np.mean(nu_vec_TVP) ,
@@ -70,7 +75,11 @@ def generate_plots(result,plots_dir):
         np.var(gamma_vec_TVM),
         np.var(a_vec_TVM) , np.var(nu_vec_TVM) ,
         np.var(vm_vec_TVM), np.var(theta_vec_TVM)))
+    print("")
+    print("Generating plots is done!!")
 
+    sys.stdout = output_log
+    f.close()
     est_para = ['gamma', 'alpha', 'nu', 'vm', 'theta']  # ,'vm'
     model_para = ['AWC', 'UWC', 'MWC']
     est_array = np.concatenate([gamma_vec_TVP, a_vec_TVP, nu_vec_TVP, vm_vec_TVP, theta_vec_TVP,

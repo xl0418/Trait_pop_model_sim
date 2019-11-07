@@ -1,6 +1,5 @@
 
 def trait_simulator(files,result,num_threads,sstats,iterations,particles):
-    import argparse
     import sys
     import os
     import numpy as np
@@ -16,24 +15,6 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
     from tp_update_theta import tp_update
 
 
-    # parse arguments
-    # parser = argparse.ArgumentParser(description='BaleenWhale arguments')
-    # parser.add_argument("--treedata", required=True, type=str, help="treedata directories")
-    # parser.add_argument("--result", required=True, type=str, help="result npy file")
-    # parser.add_argument("--num_threads", default=-1, required=False, type=int, help="number of threads")
-    # parser.add_argument("--sstats", required=True, type=str, help="3 types of summary statistics: "
-    #                                                               "smtd; umtd; pics")
-    # args = parser.parse_args()
-    # files = args.treedata
-    # output = args.result
-    # num_threads = args.num_threads
-    # sstats = args.sstats
-    #
-    #
-
-    #
-    # argsort of 2-dimensional arrays is awkward
-    # returns i,j so that X[i,j] == np.sort(X)
     def argsort2D(X):
         return np.arange(len(X))[:, np.newaxis], np.argsort(X, axis=1)
 

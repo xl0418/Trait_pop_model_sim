@@ -1,6 +1,6 @@
 import sys
-import tkinter as tk                # python 3
-from tkinter import font  as tkfont # python 3
+import tkinter as tk
+from tkinter import font  as tkfont
 import tkinter.filedialog as fd
 import tkinter.ttk as ttk
 import threading
@@ -489,7 +489,7 @@ class GeneCluScri(tk.Frame):
 
         # Frame 3
         # choose the number of threads
-        self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
+        self.labelFrame3 = tk.LabelFrame(self, text="Threads setting")
         self.labelFrame3.place(x=325, y=200, width=170, height=50)
         default_threads = tk.DoubleVar(value=1)  # default value for the threads
         self.thr = tk.Label(self.labelFrame3, text='Threads').place(x=5, y=5, width=50,
@@ -675,9 +675,9 @@ class Plots(tk.Frame):
         self.browsebutton = tk.Button(self.labelFrame1, text="Browse A File",
                                       command=self.fileDialog)
         self.browsebutton.place(x=150, y=5, width=140, height=20)
-        self.data = tk.Label(self.labelFrame1, text='Result directory').place(x=5, y=5,
+        self.data = tk.Label(self.labelFrame1, text='Result file').place(x=5, y=5,
                                                                             width=140, height=20)
-        self.output = tk.Label(self.labelFrame1, text='Plot directory').place(x=5, y=55,
+        self.output = tk.Label(self.labelFrame1, text='Plots saving directory').place(x=5, y=55,
                                                                                 width=140,
                                                                                 height=20)
         self.browsebutton2 = tk.Button(self.labelFrame1, text="Browse A Dir",
@@ -716,10 +716,15 @@ class Plots(tk.Frame):
         self.label = tk.Label(self.labelFrame1, text="")
         self.label.place(x=5, y=80, width=285, height=20)
         self.label.configure(text=self.save_dir)
-        print('Saving dir is in the directory: %s' % self.save_dir)
+        print('Saving dir is : %s' % self.save_dir)
 
     def generate_plots(self):
         generate_plots(result=self.resultdir,plots_dir=self.save_dir)
+        # read the data
+        with open("Plotting_log.txt", "r") as f:
+            self.outputtextbox.insert(tk.INSERT, f.read())
+        self.outputtextbox.see(tk.END)
+
 
 
 
@@ -748,7 +753,6 @@ class Plots(tk.Frame):
 
     def show_progress(self, start):
         if start:
-            self.progressbar.grid()
             self.progressbar.start()
         else:
             self.progressbar.stop()
