@@ -17,6 +17,7 @@ class SampleApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        self.title("Trait player")
         self.minsize(640, 400)
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
 
@@ -29,7 +30,7 @@ class SampleApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (ParaInf, ConParaInf, GeneCluScri):
+        for F in (ParaInf, ConParaInf, GeneCluScri,Plots):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -58,15 +59,18 @@ class ParaInf(tk.Frame):
                             command=lambda: controller.show_frame("ConParaInf"))
         button3 = tk.Button(self, text="Generate Cluster Scripts",
                             command=lambda: controller.show_frame("GeneCluScri"))
+        button4 = tk.Button(self, text="Plotting",
+                            command=lambda: controller.show_frame("Plots"))
         button1.grid(row=0,column=0,sticky="W")
-        button2.grid(row=0,column=2,sticky="W")
-        button3.grid(row=0,column=3,sticky="W")
+        button2.grid(row=0,column=1,sticky="W")
+        button3.grid(row=0,column=2,sticky="W")
+        button4.grid(row=0,column=3,sticky="W")
 
         label = tk.Label(self, text="Parameter Inference", font=controller.title_font)
-        label.grid(row=1,column=0,sticky="W", columnspan=5)
+        label.grid(row=1,column=0,sticky="W")
 
         self.labelFrame1 = tk.LabelFrame(self, text="Input and Output")
-        self.labelFrame1.grid(column=0, row=2, padx=20, pady=20, sticky="W", columnspan=5)
+        self.labelFrame1.grid(column=0, row=2, padx=20, pady=20, sticky="W", columnspan=2)
         self.browsebutton = tk.Button(self.labelFrame1, text="Browse A File", command=self.fileDialog)
         self.browsebutton.grid(column=1, row=0)
         self.data = tk.Label(self.labelFrame1, text='Data directory').grid(row=0, sticky="W")
@@ -97,7 +101,7 @@ class ParaInf(tk.Frame):
 
         # choose the number of threads
         self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
-        self.labelFrame3.grid(column=2, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame3.grid(column=1, row=3, padx=20, pady=20, sticky="N")
         default_threads = tk.DoubleVar(value=1)  # default value for the threads
         self.thr = tk.Label(self.labelFrame3, text='Threads').grid(row=4, sticky="W")
         self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
@@ -107,7 +111,7 @@ class ParaInf(tk.Frame):
 
         # choose one summary stats
         self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
-        self.labelFrame4.grid(column=3, row=3, padx=20, pady=20, sticky="N")
+        self.labelFrame4.grid(column=2, row=3, padx=20, pady=20, sticky="N")
         self.choice = tk.IntVar()
         self.choice.set(1)
         self.smtdbutton = tk.Radiobutton(self.labelFrame4, text='smtd', variable=self.choice,
@@ -119,7 +123,7 @@ class ParaInf(tk.Frame):
 
         # Output info
         self.labelFrame4 = tk.LabelFrame(self, text="Report of the progress")
-        self.labelFrame4.grid(column=0, row=4, padx=20, pady=20, sticky="W", columnspan=5)
+        self.labelFrame4.grid(column=0, row=4, padx=20, pady=20, sticky="W", columnspan=4)
         self.progressbar = ttk.Progressbar(self.labelFrame4, mode='indeterminate',length=500)
         self.progressbar.grid(column=0, row=0, sticky="W")
 
@@ -133,7 +137,7 @@ class ParaInf(tk.Frame):
 
         self.gobutton = tk.Button(self.labelFrame4, text="Go", command=self.go_process, height=1,
                                width=10)
-        self.gobutton.grid(row=0, column=1, sticky="E")
+        self.gobutton.grid(row=0, column=0, sticky="E")
         self.outputtextbox = tk.Text(self.labelFrame4)
         self.outputtextbox.grid(column=0, row=2, sticky="W")
 
@@ -237,9 +241,12 @@ class ConParaInf(tk.Frame):
                             command=lambda: controller.show_frame("ConParaInf"))
         button3 = tk.Button(self, text="Generate Cluster Scripts",
                             command=lambda: controller.show_frame("GeneCluScri"))
-        button1.grid(row=0, column=0, sticky="W")
-        button2.grid(row=0, column=2, sticky="W")
-        button3.grid(row=0, column=3, sticky="W")
+        button4 = tk.Button(self, text="Plotting",
+                            command=lambda: controller.show_frame("Plots"))
+        button1.grid(row=0,column=0,sticky="W")
+        button2.grid(row=0,column=1,sticky="W")
+        button3.grid(row=0,column=2,sticky="W")
+        button4.grid(row=0,column=3,sticky="W")
 
         label = tk.Label(self, text="Continue Parameter Inference", font=controller.title_font)
         label.grid(row=1,column=0,sticky="W", columnspan=5)
@@ -403,9 +410,12 @@ class GeneCluScri(tk.Frame):
                             command=lambda: controller.show_frame("ConParaInf"))
         button3 = tk.Button(self, text="Generate Cluster Scripts",
                             command=lambda: controller.show_frame("GeneCluScri"))
-        button1.grid(row=0, column=0, sticky="W")
-        button2.grid(row=0, column=2, sticky="W")
-        button3.grid(row=0, column=3, sticky="W")
+        button4 = tk.Button(self, text="Plotting",
+                            command=lambda: controller.show_frame("Plots"))
+        button1.grid(row=0,column=0,sticky="W")
+        button2.grid(row=0,column=1,sticky="W")
+        button3.grid(row=0,column=2,sticky="W")
+        button4.grid(row=0,column=3,sticky="W")
 
         label = tk.Label(self, text="Generate Cluster Scripts", font=controller.title_font)
         label.grid(row=1,column=0,sticky="W", columnspan=5)
@@ -580,6 +590,200 @@ python3 Trait_simulator_cluster.py --treedata %s --result %s --num_threads %i --
         print("Copying the data from %s to %s ... \n" % (self.treedatadir, self.save_dir))
         print("Generating run.sh script is done!" )
         print("run.sh is ..." )
+        sys.stdout = output_log
+        f.close()
+
+class Plots(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        button1 = tk.Button(self, text="Parameter Inference",
+                            command=lambda: controller.show_frame("ParaInf"))
+        button2 = tk.Button(self, text="Continue Parameter Inference",
+                            command=lambda: controller.show_frame("ConParaInf"))
+        button3 = tk.Button(self, text="Generate Cluster Scripts",
+                            command=lambda: controller.show_frame("GeneCluScri"))
+        button4 = tk.Button(self, text="Plotting",
+                            command=lambda: controller.show_frame("Plots"))
+        button1.grid(row=0,column=0,sticky="W")
+        button2.grid(row=0,column=1,sticky="W")
+        button3.grid(row=0,column=2,sticky="W")
+        button4.grid(row=0,column=3,sticky="W")
+
+        label = tk.Label(self, text="Generate Cluster Scripts", font=controller.title_font)
+        label.grid(row=1, column=0, sticky="W", columnspan=5)
+
+        self.labelFrame1 = tk.LabelFrame(self, text="Input and Output")
+        self.labelFrame1.grid(column=0, row=2, padx=20, pady=20, sticky="W", columnspan=5)
+        self.browsebutton = tk.Button(self.labelFrame1, text="Browse A File",
+                                      command=self.fileDialog)
+        self.browsebutton.grid(column=1, row=0)
+        self.data = tk.Label(self.labelFrame1, text='Data directory').grid(row=0, sticky="W")
+        self.output = tk.Label(self.labelFrame1, text='Output directory').grid(row=2,
+                                                                               sticky="W")
+        self.browsebutton2 = tk.Button(self.labelFrame1, text="Browse A File",
+                                       command=self.savedir)
+        self.browsebutton2.grid(column=1, row=2)
+
+        # choose the number of iterations and particles
+        self.labelFrame2 = tk.LabelFrame(self, text="Structure of the algorithm")
+        self.labelFrame2.grid(column=0, row=3, padx=20, pady=20, sticky="W")
+        default_iterations = tk.DoubleVar(value=10)  # default value for the iterations
+        self.iter = tk.Label(self.labelFrame2, text='Iterations').grid(row=2, sticky="W")
+        self.iterations = tk.Spinbox(self.labelFrame2, from_=1, to=100,
+                                     command=self.update_iterations,
+                                     textvariable=default_iterations)
+        self.iterations.grid(row=2, column=1, ipadx="9")
+        self.iterations.bind('<Return>', lambda event: self.update_iterations())
+
+        default_particles = tk.DoubleVar(value=1000)  # default value for the particles
+        self.par = tk.Label(self.labelFrame2, text='Particles').grid(row=3, sticky="W")
+        self.particles = tk.Spinbox(self.labelFrame2, from_=100, to=100000,
+                                    command=self.update_particles,
+                                    textvariable=default_particles)
+        self.particles.grid(row=3, column=1, ipadx="9")
+        self.particles.bind('<Return>', lambda event: self.update_particles())
+
+        # choose the number of threads
+        self.labelFrame3 = tk.LabelFrame(self, text="Threads settings")
+        self.labelFrame3.grid(column=2, row=3, padx=20, pady=20, sticky="N")
+        default_threads = tk.DoubleVar(value=1)  # default value for the threads
+        self.thr = tk.Label(self.labelFrame3, text='Threads').grid(row=4, sticky="W")
+        self.thread = tk.Spinbox(self.labelFrame3, from_=1, to=8, command=self.update_threads,
+                                 textvariable=default_threads)
+        self.thread.grid(row=4, column=1, ipadx="9")
+        self.thread.bind('<Return>', lambda event: self.update_threads())
+
+        # choose one summary stats
+        self.labelFrame4 = tk.LabelFrame(self, text="Summary statistics")
+        self.labelFrame4.grid(column=3, row=3, padx=20, pady=20, sticky="N")
+        self.choice = tk.IntVar()
+        self.choice.set(1)
+        self.smtdbutton = tk.Radiobutton(self.labelFrame4, text='smtd', variable=self.choice,
+                                         value=1, command=self.update_sstats).grid(row=0,
+                                                                                   column=0)
+        self.umtdbutton = tk.Radiobutton(self.labelFrame4, text='umtd', variable=self.choice,
+                                         value=2,
+                                         command=self.update_sstats).grid(row=0, column=1)
+        self.picsbutton = tk.Radiobutton(self.labelFrame4, text='pics', variable=self.choice,
+                                         value=3,
+                                         command=self.update_sstats).grid(row=0, column=2)
+
+        # Output info
+        self.labelFrame4 = tk.LabelFrame(self, text="Report of the progress")
+        self.labelFrame4.grid(column=0, row=4, padx=20, pady=20, sticky="W", columnspan=5)
+        # self.report = Text(master)
+        # Set default values
+        self.sstats_value = self.choice.get()
+        self.threads_value = self.thread.get()
+        self.iterations_value = self.iterations.get()
+        self.particles_value = self.particles.get()
+
+        self.gobutton = tk.Button(self.labelFrame4, text="Generate", command=self.generate_all,
+                                  height=1,
+                                  width=10)
+        self.gobutton.grid(row=0, column=0, sticky="E")
+
+        self.outputtextbox = tk.Text(self.labelFrame4)
+        self.outputtextbox.grid(column=0, row=2, sticky="W")
+
+        # Open a file dialog
+
+    def fileDialog(self):
+        self.treedatadir = fd.askdirectory()
+        self.label = tk.Label(self.labelFrame1, text="")
+        self.label.grid(column=1, row=1)
+        self.label.configure(text=self.treedatadir)
+        print('Data file is in the directory: %s' % self.treedatadir)
+
+    def savedir(self):
+        self.save_dir = fd.askdirectory()
+        self.label = tk.Label(self.labelFrame1, text="")
+        self.label.grid(column=1, row=3)
+        self.label.configure(text=self.save_dir)
+        print('Saving dir is in the directory: %s' % self.save_dir)
+
+    def update_sstats(self):
+        self.sstats_value = self.choice.get()
+        stats_vec = ['smtd', 'umtd', 'pics']
+        stats = stats_vec[self.sstats_value - 1]
+        print('The summary stats is chosed to be: %s' % stats)
+
+    def update_threads(self):
+        self.threads_value = self.thread.get()
+        print('No. of threads to be used: %s' % str(self.threads_value))
+
+    def update_iterations(self):
+        self.iterations_value = self.iterations.get()
+        print('No. of iterations to be used: %s' % str(self.iterations_value))
+
+    def update_particles(self):
+        self.particles_value = self.particles.get()
+        print('No. of particles to be used: %s' % str(self.particles_value))
+
+    def copy_treedata(self):
+        source_file = self.treedatadir
+        src_files = os.listdir(source_file)
+        # create treedata folder in the destination
+        des_treedata_dir = os.path.join(self.save_dir, "treedata")
+        if not os.path.exists(des_treedata_dir):
+            os.mkdir(des_treedata_dir)
+        for file_name in src_files:
+            full_file_name = os.path.join(source_file, file_name)
+            des_file_name = os.path.join(des_treedata_dir, file_name)
+            if os.path.isdir(full_file_name):
+                shutil.copytree(full_file_name, des_file_name, symlinks=False, ignore=None)
+            else:
+                shutil.copy(full_file_name, des_file_name)
+        print("Copy the data file from %s to %s" % (source_file, self.save_dir))
+
+    def copy_algorithm_script(self):
+        current_algorithm_script = os.getcwd() + "\\abcpp\\Trait_simulator_cluster.py"
+        shutil.copy2(current_algorithm_script, self.save_dir)
+        print("Copy the algorithm script to %s" % (self.save_dir))
+
+    def create_bash_script(self):
+        stats_vec = ['smtd', 'umtd', 'pics']
+        stats = stats_vec[self.sstats_value - 1]
+        with open(self.save_dir + '\\run.sh', 'w') as rsh:
+            rsh.write('''\
+#!/bin/bash
+#SBATCH --time=10-00:00:00
+#SBATCH --partition=gelifes
+#SBATCH --ntasks=1
+#SBATCH --nodes=1
+#SBATCH --mem=10GB
+#SBATCH --cpus-per-task=20
+#SBATCH --output=MSumtd.log
+#SBATCH --job-name=MSumtd
+
+python3 Trait_simulator_cluster.py --treedata %s --result %s --num_threads %i --sstats %s 
+--num_iterations %i --num_particles %i
+                ''' % ('treedata\\', 'ParaInf_result_' + stats, int(self.threads_value), stats,
+                       int(self.iterations_value), int(self.particles_value)))
+
+    def generate_all(self):
+        self.create_bash_script()
+        self.copy_treedata()
+        self.copy_algorithm_script()
+        self.GenCluScript_log()
+        self.outputtextbox.delete('1.0', tk.END)
+        # read the data
+        with open("GenerateClusterScript_log.txt", "r") as f:
+            self.outputtextbox.insert(tk.INSERT, f.read())
+        self.outputtextbox.see(tk.END)
+        with open(self.save_dir + "/run.sh", "r") as f:
+            self.outputtextbox.insert(tk.INSERT, f.read())
+        self.outputtextbox.see(tk.END)
+
+    def GenCluScript_log(self):
+        output_log = sys.stdout
+        f = open('GenerateClusterScript_log.txt', 'w')
+        sys.stdout = f
+        print("Copying the data from %s to %s ... \n" % (self.treedatadir, self.save_dir))
+        print("Generating run.sh script is done!")
+        print("run.sh is ...")
         sys.stdout = output_log
         f.close()
 
