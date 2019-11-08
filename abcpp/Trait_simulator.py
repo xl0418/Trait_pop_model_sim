@@ -224,7 +224,7 @@ def trait_simulator(files,result,num_threads,sstats,iterations,particles):
 
     # Log the progress
     output_log = sys.stdout
-    f = open('ParameterInference_log.txt', 'w')
+    f = open('ParameterInference_log.txt', 'w+')
     sys.stdout = f
     print('trying to estimate the parameters', '...')
     sys.stdout = output_log

@@ -175,10 +175,6 @@ class ParaInf(tk.Frame):
         self.sstats_value = self.choice.get()
         stats_vec = ['smtd', 'umtd', 'pics']
         stats = stats_vec[self.sstats_value - 1]
-        print(self.filename,self.output_value,self.threads_value,
-              self.sstats_value,self.iterations_value,self.particles_value)
-        print(type(self.filename),type(self.output_value),type(self.threads_value),
-              type(self.sstats_value),type(self.iterations_value),type(self.particles_value))
         out_put = trait_simulator(files=self.filename, result=self.output_value,
                           num_threads=int(self.threads_value), sstats=stats,
                           iterations=int(self.iterations_value), particles=int(
@@ -384,10 +380,6 @@ class ConParaInf(tk.Frame):
         self.sstats_value = self.choice.get()
         stats_vec = ['smtd', 'umtd', 'pics']
         stats = stats_vec[self.sstats_value - 1]
-        print(self.filename, self.output_value, self.threads_value,
-              self.sstats_value)
-        print(type(self.filename), type(self.output_value), type(self.threads_value),
-              type(self.sstats_value))
         out_put = Continue_trait_simulator(files=self.filename, result=self.output_value,
                                   num_threads=int(self.threads_value), sstats=stats,
                                   previous_result = self.pre_result,
@@ -596,11 +588,12 @@ class GeneCluScri(tk.Frame):
 
 
     def copy_algorithm_script(self):
-        current_algorithm_script = os.getcwd()+"\\abcpp\\Trait_simulator_cluster.py"
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        current_algorithm_script = current_dir+"\\Trait_simulator_cluster.py"
         shutil.copy2(current_algorithm_script,self.save_dir)
-        piccompute_script = os.getcwd()+"\\abcpp\\pic_compute.py"
+        piccompute_script = current_dir+"\\pic_compute.py"
         shutil.copy2(piccompute_script,self.save_dir)
-        tpupdate_script = os.getcwd()+"\\abcpp\\tp_update_theta.py"
+        tpupdate_script = current_dir+"\\tp_update_theta.py"
         shutil.copy2(tpupdate_script,self.save_dir)
         print("Copy the algorithm script to %s" % (self.save_dir))
 
@@ -762,3 +755,9 @@ class Plots(tk.Frame):
 if __name__ == "__main__":
     app = SampleApp()
     app.mainloop()
+
+
+print(os.path.dirname(os.path.realpath(__file__)))
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
+get_script_path()
