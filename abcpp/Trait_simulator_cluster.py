@@ -84,6 +84,10 @@ obsZ_ordered_sim = length[
     [np.where(sim_species_label[i] == extantlabels_array)[0][0] for i in range(15)]]
 obsZ = obsZ_ordered_sim
 meantrait = np.mean(obsZ)
+if sstats == 'smtd':
+	s = np.argsort(obsZ)
+	obsZ = obsZ[s]
+	obsZ = obsZ.astype(np.float)
 # PIC calculation
 taxa1 = dendropy.TaxonNamespace()
 dataset_combined = dendropy.DataSet.get(path=files + "bw_char.nex", schema="nexus")
