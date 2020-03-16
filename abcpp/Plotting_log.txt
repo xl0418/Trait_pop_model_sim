@@ -1,0 +1,8 @@
+TVP 5th gamma = 5.333e+00  a = 3.725e+02 nu = 7.826e-03 Vm = 0.000316 theta = 3.176608
+Var: gamma = 2.113e-02  a = 1.080e+02 nu = 2.371e-05 Vm = 0.000000 theta = 2.840803
+TV 5th gamma = 6.490e+00  a = 6.820e+02 nu = 4.011e-03 Vm = 0.000001 theta = 3.844192
+Var: gamma = 1.973e+00  a = 8.242e+03 nu = 9.234e-06 Vm = 0.000000 theta = 7.141422
+TVM 5th gamma = 2.669e+00  a = 1.546e+03 nu = 2.619e-02 Vm = 0.000051 theta = 2.642838
+Var: gamma = 1.631e-01  a = 2.112e+04 nu = 2.818e-04 Vm = 0.000000 theta = 0.260261
+
+Generating plots is done!!
