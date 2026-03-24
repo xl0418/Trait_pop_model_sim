@@ -36,7 +36,7 @@ nu=1e-4
 # dir_path = '/home/p286026/Liang/abcpp/'
 dir_path = '' #'c:/Liang/Googlebox/Research/Project2/'
 
-files = dir_path + 'treedata/'
+files = dir_path + 'abcpp/treedata/'
 
 savedir = dir_path + 'modelselec2w_umtd_pics.npy'
 
